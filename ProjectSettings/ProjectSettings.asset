@@ -537,6 +537,7 @@ PlayerSettings:
   webGLLinkerTarget: 1
   webGLThreadsSupport: 0
   scriptingDefineSymbols:
+    1: 
     4: 
     7: 
     14: 
@@ -552,14 +553,14 @@ PlayerSettings:
   apiCompatibilityLevelPerPlatform: {}
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
-  metroPackageName: Template3D
+  metroPackageName: HumanRobotInterface
   metroPackageVersion: 1.0.0.0
   metroCertificatePath: Assets\WSATestCertificate.pfx
   metroCertificatePassword: 
   metroCertificateSubject: DefaultCompany
   metroCertificateIssuer: DefaultCompany
   metroCertificateNotAfter: 804d3a07c737d701
-  metroApplicationDescription: Template_3D
+  metroApplicationDescription: HumanRobotInterface
   wsaImages: {}
   metroTileShortName: HumanRobotInterface
   metroTileShowName: 0
@@ -589,7 +590,7 @@ PlayerSettings:
       InputInjectionBrokered: False
       InternetClient: True
       InternetClientServer: False
-      Location: True
+      Location: False
       LowLevelDevices: False
       Microphone: True
       MusicLibrary: False

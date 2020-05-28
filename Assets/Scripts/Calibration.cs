@@ -23,13 +23,9 @@ public class Calibration : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log("Search RS Object");
         RosSharp = GameObject.Find("RosSharp");
-        Debug.Log("Found RS Object");
         rosSocket = RosSharp.GetComponent<RosConnector>().RosSocket;
-        Debug.Log("Got Component");
         subscriptionId = rosSocket.Subscribe<nav_msgs.Odometry>(topic, callback, queue_length: 1);
-        Debug.Log("Subscribed");
     }
 
     void OnEnable()
