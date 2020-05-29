@@ -32,8 +32,8 @@ public class MovementControl : MonoBehaviour
         twist = new geometry_msgs.Twist();
 
         // Not necessary, since the default constructor initializes with zeros.
-        //twist.linear = Vec3ToGeoVec3(Vector3.zero);
-        //twist.angular = Vec3ToGeoVec3(Quaternion.identity.eulerAngles);
+        //twist.linear = Conversions.Vec3ToGeoMsgsVec3(Vector3.zero);
+        //twist.angular = Conversions.Vec3ToGeoMsgsVec3(Quaternion.identity.eulerAngles);
 
         twist.linear.x = linear;
         twist.angular.z = angular;
@@ -43,14 +43,5 @@ public class MovementControl : MonoBehaviour
     {
         if (Time.frameCount % frameSkip == 0)   // slow down publishing so that the robot can follow
             rosSocket.Publish(publicationId, twist);
-    }
-
-    private static geometry_msgs.Vector3 Vec3ToGeoVec3(Vector3 vector)
-    {
-        geometry_msgs.Vector3 geoVector = new geometry_msgs.Vector3();
-        geoVector.x = vector.x;
-        geoVector.y = vector.y;
-        geoVector.z = vector.z;
-        return geoVector;
     }
 }
