@@ -1,79 +1,215 @@
 fileFormatVersion: 2
 guid: 96b08883962972f4eb2a46cad4c375d3
 ModelImporter:
-  serializedVersion: 23
-  fileIDToRecycleName:
-    100000: //RootNode
-    100002: node0
-    100004: node1
-    100006: node10
-    100008: node11
-    100010: node12
-    100012: node2
-    100014: node3
-    100016: node4
-    100018: node5
-    100020: node6
-    100022: node7
-    100024: node8
-    100026: node9
-    400000: //RootNode
-    400002: node0
-    400004: node1
-    400006: node10
-    400008: node11
-    400010: node12
-    400012: node2
-    400014: node3
-    400016: node4
-    400018: node5
-    400020: node6
-    400022: node7
-    400024: node8
-    400026: node9
-    2100000: mymaterial
-    2300000: node0
-    2300002: node1
-    2300004: node10
-    2300006: node11
-    2300008: node12
-    2300010: node2
-    2300012: node3
-    2300014: node4
-    2300016: node5
-    2300018: node6
-    2300020: node7
-    2300022: node8
-    2300024: node9
-    3300000: node0
-    3300002: node1
-    3300004: node10
-    3300006: node11
-    3300008: node12
-    3300010: node2
-    3300012: node3
-    3300014: node4
-    3300016: node5
-    3300018: node6
-    3300020: node7
-    3300022: node8
-    3300024: node9
-    4300000: node0
-    4300002: node1
-    4300004: node2
-    4300006: node3
-    4300008: node4
-    4300010: node5
-    4300012: node6
-    4300014: node7
-    4300016: node8
-    4300018: node9
-    4300020: node10
-    4300022: node11
-    4300024: node12
+  serializedVersion: 19300
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: //RootNode
+  - first:
+      1: 100002
+    second: node0
+  - first:
+      1: 100004
+    second: node1
+  - first:
+      1: 100006
+    second: node10
+  - first:
+      1: 100008
+    second: node11
+  - first:
+      1: 100010
+    second: node12
+  - first:
+      1: 100012
+    second: node2
+  - first:
+      1: 100014
+    second: node3
+  - first:
+      1: 100016
+    second: node4
+  - first:
+      1: 100018
+    second: node5
+  - first:
+      1: 100020
+    second: node6
+  - first:
+      1: 100022
+    second: node7
+  - first:
+      1: 100024
+    second: node8
+  - first:
+      1: 100026
+    second: node9
+  - first:
+      4: 400000
+    second: //RootNode
+  - first:
+      4: 400002
+    second: node0
+  - first:
+      4: 400004
+    second: node1
+  - first:
+      4: 400006
+    second: node10
+  - first:
+      4: 400008
+    second: node11
+  - first:
+      4: 400010
+    second: node12
+  - first:
+      4: 400012
+    second: node2
+  - first:
+      4: 400014
+    second: node3
+  - first:
+      4: 400016
+    second: node4
+  - first:
+      4: 400018
+    second: node5
+  - first:
+      4: 400020
+    second: node6
+  - first:
+      4: 400022
+    second: node7
+  - first:
+      4: 400024
+    second: node8
+  - first:
+      4: 400026
+    second: node9
+  - first:
+      21: 2100000
+    second: mymaterial
+  - first:
+      23: 2300000
+    second: node0
+  - first:
+      23: 2300002
+    second: node1
+  - first:
+      23: 2300004
+    second: node10
+  - first:
+      23: 2300006
+    second: node11
+  - first:
+      23: 2300008
+    second: node12
+  - first:
+      23: 2300010
+    second: node2
+  - first:
+      23: 2300012
+    second: node3
+  - first:
+      23: 2300014
+    second: node4
+  - first:
+      23: 2300016
+    second: node5
+  - first:
+      23: 2300018
+    second: node6
+  - first:
+      23: 2300020
+    second: node7
+  - first:
+      23: 2300022
+    second: node8
+  - first:
+      23: 2300024
+    second: node9
+  - first:
+      33: 3300000
+    second: node0
+  - first:
+      33: 3300002
+    second: node1
+  - first:
+      33: 3300004
+    second: node10
+  - first:
+      33: 3300006
+    second: node11
+  - first:
+      33: 3300008
+    second: node12
+  - first:
+      33: 3300010
+    second: node2
+  - first:
+      33: 3300012
+    second: node3
+  - first:
+      33: 3300014
+    second: node4
+  - first:
+      33: 3300016
+    second: node5
+  - first:
+      33: 3300018
+    second: node6
+  - first:
+      33: 3300020
+    second: node7
+  - first:
+      33: 3300022
+    second: node8
+  - first:
+      33: 3300024
+    second: node9
+  - first:
+      43: 4300000
+    second: node0
+  - first:
+      43: 4300002
+    second: node1
+  - first:
+      43: 4300004
+    second: node2
+  - first:
+      43: 4300006
+    second: node3
+  - first:
+      43: 4300008
+    second: node4
+  - first:
+      43: 4300010
+    second: node5
+  - first:
+      43: 4300012
+    second: node6
+  - first:
+      43: 4300014
+    second: node7
+  - first:
+      43: 4300016
+    second: node8
+  - first:
+      43: 4300018
+    second: node9
+  - first:
+      43: 4300020
+    second: node10
+  - first:
+      43: 4300022
+    second: node11
+  - first:
+      43: 4300024
+    second: node12
   externalObjects: {}
   materials:
-    importMaterials: 1
+    materialImportMode: 1
     materialName: 0
     materialSearch: 1
     materialLocation: 1
@@ -106,6 +242,7 @@ ModelImporter:
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 0
@@ -113,18 +250,19 @@ ModelImporter:
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
     preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
     secondaryUVPackMargin: 4
     useFileScale: 1
-    previousCalculatedGlobalScale: 1
-    hasPreviousCalculatedGlobalScale: 0
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
@@ -133,10 +271,10 @@ ModelImporter:
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
-  copyAvatar: 0
   humanDescription:
-    serializedVersion: 2
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -146,13 +284,16 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 0
   humanoidOversampling: 1
+  avatarSetup: 0
   additionalBone: 0
   userData: 
   assetBundleName: 
