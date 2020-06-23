@@ -72,7 +72,8 @@ namespace QRTracking
                     Quaternion rotation = Quaternion.identity;
                     Vector3 translation = new Vector3(0.0f, 0.0f, 0.0f);
                     
-                    System.IntPtr rootCoordnateSystemPtr = UnityEngine.XR.WindowsMR.WindowsMREnvironment.OriginSpatialCoordinateSystem;
+                    //System.IntPtr rootCoordnateSystemPtr = UnityEngine.XR.WindowsMR.WindowsMREnvironment.OriginSpatialCoordinateSystem;
+                    System.IntPtr rootCoordnateSystemPtr = UnityEngine.XR.WSA.WorldManager.GetNativeISpatialCoordinateSystemPtr();
                     SpatialCoordinateSystem rootSpatialCoordinateSystem = (SpatialCoordinateSystem)System.Runtime.InteropServices.Marshal.GetObjectForIUnknown(rootCoordnateSystemPtr);
 
                     // Get the relative transform from the unity origin
