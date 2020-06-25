@@ -30,8 +30,9 @@ namespace QRTracking
 
     public class QRCodesManager : Singleton<QRCodesManager>
     {
+        [HideInInspector]  // Edit: Would cause automatic restarts due to subsequent changes.
         [Tooltip("Determines if the QR codes scanner should be automatically started.")]
-        public bool AutoStartQRTracking = true;
+        public bool AutoStartQRTracking = false; //true;
 
         public bool IsTrackerRunning { get; private set; }
 
@@ -134,6 +135,7 @@ namespace QRTracking
                 {
                     qrTracker.Stop();
                     qrCodesList.Clear();
+                    qrTracker = null;  // Edit: Otherwise StartQRTracking() does not work. See chgatla-microsoft/QRTracking#10. Autostart should be disabled.
                 }
 
                 var handlers = QRCodesTrackingStateChanged;
