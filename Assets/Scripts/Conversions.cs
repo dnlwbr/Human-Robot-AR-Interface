@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using geometry_msgs = RosSharp.RosBridgeClient.Messages.Geometry;
+using nav_msgs = RosSharp.RosBridgeClient.Messages.Navigation;
 
 public static class Conversions
 {
@@ -62,5 +63,22 @@ public static class Conversions
         geoPoint.y = vector.y;
         geoPoint.z = vector.z;
         return geoPoint;
+    }
+
+    public static Vector3 NavMsgsOdomPositionToVec3(nav_msgs.Odometry message)
+    {
+        return new Vector3(
+            message.pose.pose.position.x,
+            message.pose.pose.position.y,
+            message.pose.pose.position.z);
+    }
+
+    public static Quaternion NavMsgsOdomOrientationToQuaternion(nav_msgs.Odometry message)
+    {
+        return new Quaternion(
+            message.pose.pose.orientation.x,
+            message.pose.pose.orientation.y,
+            message.pose.pose.orientation.z,
+            message.pose.pose.orientation.w);
     }
 }

@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using nav_msgs = RosSharp.RosBridgeClient.Messages.Navigation;
 
-public class Calibration : MonoBehaviour
-{   
+public class MarkerController : MonoBehaviour
+{
     private GameObject RosSharp;
     private RosSocket rosSocket;
     private string subscriptionId;
@@ -17,6 +17,7 @@ public class Calibration : MonoBehaviour
     private Quaternion robotCurrentRotation;
     private Vector3 markerInitialPosition;
     private Quaternion markerInitialRotation;
+    private Vector3 robotOrigin;
     private Vector3 markerOffset;
     private bool isInitialized;
 
@@ -30,11 +31,12 @@ public class Calibration : MonoBehaviour
 
     void OnEnable()
     {
+        robotOrigin = gameObject.GetComponent<MarkerCalibration>().robotOrigin;
         markerInitialPosition = gameObject.transform.position;
         markerInitialRotation = gameObject.transform.rotation;
     }
 
-    void OnDisable() 
+    void OnDisable()
     {
         isInitialized = false;
     }
@@ -48,8 +50,9 @@ public class Calibration : MonoBehaviour
 
     private void callback(nav_msgs.Odometry message)
     {
-        robotCurrentPosition = GetPosition(message).Ros2Unity();
-        robotCurrentRotation = GetRotation(message).Ros2Unity();
+        robotCurrentPosition = Conversions.NavMsgsOdomPositionToVec3(message).Ros2Unity();
+        robotCurrentPosition += robotOrigin;
+        robotCurrentRotation = Conversions.NavMsgsOdomOrientationToQuaternion(message).Ros2Unity();
 
         if (!isInitialized)
         {
@@ -57,36 +60,22 @@ public class Calibration : MonoBehaviour
             robotInitialRotation = robotCurrentRotation;
             markerOffset = markerInitialPosition - robotInitialPosition;
             isInitialized = true;
+            Debug.Log("Bridge: Initialized.");
         }
     }
 
     private void ProcessMessage()
     {
-        if (robotCurrentPosition.z != 0)    //
-            GameObject.Find("TestCube").transform.Rotate(0, 3, 0);
-
         //Rotation
         Quaternion diff = robotCurrentRotation * Quaternion.Inverse(robotInitialRotation);  // diff * q1 = q2  -->  diff = q2 * Inverse(q1)
         gameObject.transform.rotation = diff * markerInitialRotation;
 
         // Position
         gameObject.transform.position = diff * markerOffset + robotCurrentPosition;
-    }
 
-    private Vector3 GetPosition(nav_msgs.Odometry message)
-    {
-        return new Vector3(
-            message.pose.pose.position.x,
-            message.pose.pose.position.y,
-            message.pose.pose.position.z);
-    }
-
-    private Quaternion GetRotation(nav_msgs.Odometry message)
-    {
-        return new Quaternion(
-            message.pose.pose.orientation.x,
-            message.pose.pose.orientation.y,
-            message.pose.pose.orientation.z,
-            message.pose.pose.orientation.w);
+        // Alternativ:
+        //gameObject.transform.position = markerInitialPosition + robotCurrentPosition - robotInitialPosition;
+        //float theta = Quaternion.Angle(robotInitialRotation, robotCurrentRotation) * Mathf.Deg2Rad;
+        //gameObject.transform.RotateAround(robotCurrentPosition, Vector3.up, theta);
     }
 }
