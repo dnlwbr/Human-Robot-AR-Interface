@@ -171,7 +171,7 @@ namespace QRTracking
 
         private void QRCodeWatcher_Updated(object sender, QRCodeUpdatedEventArgs args)
         {
-            Debug.Log("QRCodesManager QRCodeWatcher_Updated");
+            //Debug.Log("QRCodesManager QRCodeWatcher_Updated");
 
             bool found = false;
             lock (qrCodesList)

@@ -55,7 +55,7 @@ public class GazePublisher : MonoBehaviour
         rosSocket.Publish(publicationIdPose, Gaze);
 
         //Debug.Log("Gaze is looking in direction: " + GazeDirection);
-        Debug.Log("Gaze origin is: " + GazeOrigin);
+        //Debug.Log("Gaze origin is: " + GazeOrigin);
     }
 
     void PublishGazeHitPoint()

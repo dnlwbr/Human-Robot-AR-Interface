@@ -73,7 +73,7 @@ namespace QRTracking
 
         private void Instance_QRCodeUpdated(object sender, QRCodeEventArgs<Microsoft.MixedReality.QR.QRCode> e)
         {
-            Debug.Log("QRCodesVisualizer Instance_QRCodeUpdated");
+            //Debug.Log("QRCodesVisualizer Instance_QRCodeUpdated");
 
             lock (pendingActions)
             {
