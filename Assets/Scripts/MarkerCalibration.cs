@@ -1,4 +1,5 @@
-﻿using RosSharp;
+﻿using Microsoft.MixedReality.Toolkit;
+using RosSharp;
 using RosSharp.RosBridgeClient;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,6 +11,11 @@ public class MarkerCalibration : MonoBehaviour
     public bool isCalibrated { get; private set; } = false;
     public float markerOffset { get; private set; }  // Distance from rotation centre to depth sensor
     public Vector3 robotOrigin { get; private set; }  // Origin of robot odometry in the unity world frame
+
+    [SerializeField]
+    [Tooltip("(Optional) Gameobject that visualizes trajectory.")]
+    private GameObject trajectoryVisualization = null;
+
     private GameObject RosSharp;
     private RosSocket rosSocket;
     private string subscriptionId;
@@ -37,13 +43,15 @@ public class MarkerCalibration : MonoBehaviour
     void OnDisable() 
     {
         isInitialized = false;
-        if (visualsInitial != null)
+        if (visualsInitial)
             Destroy(visualsInitial);
-        if (visualsTarget != null)
+        if (visualsTarget)
             Destroy(visualsTarget);
 
         if (!isCalibrated)
             gameObject.SetActive(false);
+
+        trajectoryVisualization.SetActive(false);
     }
 
     private void callback(nav_msgs.Odometry message)
@@ -63,10 +71,13 @@ public class MarkerCalibration : MonoBehaviour
 
         if (caller.name == "Visuals")
         {   
-            if (visualsInitial != null && visualsTarget != null)
+            if (visualsInitial && visualsTarget)
+            {
                 Destroy(visualsInitial);
-            
-            if (visualsTarget != null)
+                visualsInitial = null;
+            }
+
+            if (visualsTarget)
             {
                 visualsInitial = visualsTarget;
                 markerInitialPosition = visualsInitial.transform.position;
@@ -90,15 +101,24 @@ public class MarkerCalibration : MonoBehaviour
 
     private void CalculateOffset()
     {
-        if (visualsInitial != null && visualsTarget != null)
+        if (visualsInitial && visualsTarget)
         {
             //Where:
             // - p0 = Initial marker position
             // - p1 = Target marker position
             // - planeNormal = the relative 'up' vector of the plane
 
-            //Find the total angle of rotation (in radians)
-            float theta = Quaternion.Angle(robotInitialRotation, robotTargetRotation) * Mathf.Deg2Rad;
+            // Get a "forward vector" for each rotation
+            Vector3 forwardInitial = robotInitialRotation * Vector3.forward;
+            Vector3 forwardTarget = robotTargetRotation * Vector3.forward;
+
+            // Get a numeric angle for each vector, on the X-Z plane (relative to world forward)
+            float angleInitial = Mathf.Atan2(forwardInitial.x, forwardInitial.z) * Mathf.Rad2Deg;
+            float angleTarget = Mathf.Atan2(forwardTarget.x, forwardTarget.z) * Mathf.Rad2Deg;
+
+            // Get the total angle of rotation (in radians)
+            //float theta = Quaternion.Angle(robotInitialRotation, robotTargetRotation) * Mathf.Deg2Rad; // unsigned
+            float theta = Mathf.DeltaAngle(angleInitial, angleTarget) * Mathf.Deg2Rad;  // signed
 
             //Find the vector between p0 and p1
             Vector3 markerPositionDiff = markerTargetPosition - markerInitialPosition;
@@ -124,7 +144,7 @@ public class MarkerCalibration : MonoBehaviour
             Vector3 midpoint = (markerInitialPosition + markerTargetPosition) * 0.5f;
 
             //Find the direction of the centre from the midpoint (use the plane's normal to calculate the vector perpendicular to p01)
-            Vector3 dir = Vector3.Cross(Vector3.up, markerPositionDiff / Mathf.Sqrt(dist2)).normalized;
+            Vector3 dir = Vector3.Cross(Mathf.Sign(theta) * Vector3.up, markerPositionDiff / Mathf.Sqrt(dist2)).normalized;
 
             //Combine and offset to find the centre
             Vector3 centre = midpoint + dir * markerOffset;
@@ -132,15 +152,28 @@ public class MarkerCalibration : MonoBehaviour
             // Calculate origin of robot odometry in the unity world frame
             robotOrigin = centre - robotInitialPosition;
 
-            isCalibrated = true;
-
-            Debug.Log("Show rotation centre");
-            GameObject.Find("RotationCenter").transform.position = centre;
-
+            if (centre.IsValidVector())
+            {
+                isCalibrated = true;
+                if (trajectoryVisualization && isCalibrated)
+                {
+                    Debug.Log("Show rotation centre");
+                    trajectoryVisualization.SetActive(true);
+                    trajectoryVisualization.transform.position = centre + (robotTargetPosition - robotInitialPosition);
+                    Vector3 trajectoryScale = new Vector3(2 * markerOffset, trajectoryVisualization.transform.GetChild(0).localScale.y, 2 * markerOffset);
+                    trajectoryVisualization.transform.GetChild(0).localScale = trajectoryScale;
+                }
+            }
+            else
+            {
+                isCalibrated = false;
+                trajectoryVisualization.SetActive(false);
+            }
         }
         else
         {
             isCalibrated = false;
+            trajectoryVisualization.SetActive(false);
         }
     }
 }
