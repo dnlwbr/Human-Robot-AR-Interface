@@ -51,7 +51,7 @@ MonoBehaviour:
     handedness: 7
     pointerPrefab: {fileID: 1507865967819406, guid: 526b854247016cf47bc5c58e01d82407,
       type: 3}
-  - controllerType: 2048
+  - controllerType: 3072
     handedness: 7
     pointerPrefab: {fileID: 1247086986094436, guid: 039b325c9e8fd0545a0475fd4aa35b10,
       type: 3}
