@@ -17,7 +17,8 @@ public class MarkerController : MonoBehaviour
     private Quaternion robotCurrentRotation;
     private Vector3 markerInitialPosition;
     private Quaternion markerInitialRotation;
-    private Vector3 robotOrigin;
+    private Vector3 robotOriginPosition;
+    private Quaternion robotOriginRotation;
     private Vector3 markerOffset;
     private bool isInitialized;
 
@@ -31,9 +32,11 @@ public class MarkerController : MonoBehaviour
 
     void OnEnable()
     {
-        robotOrigin = gameObject.GetComponent<MarkerCalibration>().robotOrigin;
         markerInitialPosition = gameObject.transform.position;
         markerInitialRotation = gameObject.transform.rotation;
+        // Bug in callback? Access to RobotOrigin.transform (in callback) throws error
+        robotOriginPosition = GameObject.Find("RobotOrigin").transform.position;
+        robotOriginRotation = GameObject.Find("RobotOrigin").transform.rotation;
     }
 
     void OnDisable()
@@ -51,7 +54,8 @@ public class MarkerController : MonoBehaviour
     private void callback(nav_msgs.Odometry message)
     {
         robotCurrentPosition = Conversions.NavMsgsOdomPositionToVec3(message).Ros2Unity();
-        robotCurrentPosition += robotOrigin;
+        robotCurrentPosition = robotOriginRotation * robotCurrentPosition;
+        robotCurrentPosition += robotOriginPosition;
         robotCurrentRotation = Conversions.NavMsgsOdomOrientationToQuaternion(message).Ros2Unity();
 
         if (!isInitialized)
