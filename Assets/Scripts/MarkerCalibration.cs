@@ -29,6 +29,7 @@ public class MarkerCalibration : MonoBehaviour
     private Quaternion robotCurrentRotation;
     private List<CalibrationElements> calibrationElements = new List<CalibrationElements>();
     private bool isInitialized;
+    private bool isOriented;
 
     private float lastClickTime = 0;
     private float debounceDelay = 0.005f;
@@ -40,7 +41,6 @@ public class MarkerCalibration : MonoBehaviour
         public readonly Quaternion robotRotation;
         public List<Vector3> robotOrigins { get; private set; }
         public List<float> markerOffsets { get; private set; }
-        public List<float> angleFromWorldForwardToRobotOriginDirection;
         public CalibrationElements(GameObject go, Vector3 robotPos, Quaternion robotRot)
         {
             calibrationObject = go;
@@ -48,7 +48,6 @@ public class MarkerCalibration : MonoBehaviour
             robotRotation = robotRot;
             robotOrigins = new List<Vector3>();
             markerOffsets = new List<float>();
-            angleFromWorldForwardToRobotOriginDirection = new List<float>();
         }
     }
 
@@ -60,9 +59,20 @@ public class MarkerCalibration : MonoBehaviour
         subscriptionId = rosSocket.Subscribe<nav_msgs.Odometry>(topic, callback, queue_length: 1);
     }
 
+    void OnEnable()
+    {
+        isInitialized = false;  // Must be placed here instead of in OnDisable, otherwise callback function will change the value again
+    }
+
     void OnDisable() 
     {
-        isInitialized = false;
+        // The CalibrationMarkerDirection game object must first be set to the correct position so that the value fits
+        Transform directionMarkerTransfrom = GameObject.Find("CalibrationMarkerDirection").transform;
+        Vector3 directionMarkerToCenter = trajectoryVisualization.transform.position - directionMarkerTransfrom.position;
+        directionMarkerToCenter = Quaternion.Inverse(Quaternion.LookRotation(directionMarkerTransfrom.forward, Vector3.up)) * directionMarkerToCenter;
+        Debug.Log("Marker to center: (x, y, z) = " + directionMarkerToCenter.ToString("F3"));
+
+        isOriented = false;
 
         foreach (CalibrationElements calibrationElement in calibrationElements)
         {
@@ -99,12 +109,24 @@ public class MarkerCalibration : MonoBehaviour
             return;
         }
 
-        if (caller.name == "CalibrationMarker")
+        if (caller.name == "CalibrationMarkerDirection")
+        {
+            RobotOrigin.transform.forward = Quaternion.Inverse(robotCurrentRotation) * caller.transform.forward;
+            isOriented = true;
+            Vector3 robotCenter = caller.transform.position + Quaternion.LookRotation(caller.transform.forward, Vector3.up) * (new Vector3(-0.124f, 0.473f, -0.071f));
+            RobotOrigin.transform.position = robotCenter - RobotOrigin.transform.rotation * robotCurrentPosition;
+            isCalibrated = true;
+            // Wenn erneut ausgewählt, nachdem Calibriert wurde, dann wird es auf default zurück gesetzt. Ist das erwünscht?
+            Debug.Log("Direction marker selected.");
+            VisualizeOrigin();
+            VisualizeCentre();
+        }
+        else if (caller.name == "CalibrationMarkerKinect" && isOriented)
         {
             GameObject visuals = caller.transform.Find("Visuals").gameObject;
             GameObject calibrationObject = Instantiate(visuals, visuals.transform.position, visuals.transform.rotation);
             calibrationElements.Add(new CalibrationElements(calibrationObject, robotCurrentPosition, robotCurrentRotation));
-            Debug.Log("Marker selected.");
+            Debug.Log("Camera marker selected.");
             CalculateOrigins();
             Calibrate();
             VisualizeOrigin();
@@ -112,7 +134,8 @@ public class MarkerCalibration : MonoBehaviour
         }
         else
         {
-            if (caller.name == "Visuals")
+            // Prevent the original game objects from being deleted
+            if (caller.name == "Visuals" || !isOriented)
                 return;
 
             var itemToRemove = calibrationElements.Single(element => ReferenceEquals(element.calibrationObject, caller));
@@ -122,7 +145,6 @@ public class MarkerCalibration : MonoBehaviour
             {
                 calibrationElements[i].robotOrigins.RemoveAt(indexToRemove);
                 calibrationElements[i].markerOffsets.RemoveAt(indexToRemove);
-                calibrationElements[i].angleFromWorldForwardToRobotOriginDirection.RemoveAt(indexToRemove);
             }
             calibrationElements.Remove(itemToRemove);
             //Destroy(caller);
@@ -142,8 +164,6 @@ public class MarkerCalibration : MonoBehaviour
 
         for (int i = 0; i < calibrationElements.Count - 1; i++)
         {
-            Vector3 directionRobotPath = calibrationElements.Last().robotPosition - calibrationElements[i].robotPosition;
-
             // Get a "forward vector" for each rotation
             Vector3 robotInitialForward = calibrationElements[i].robotRotation * Vector3.forward;
             Vector3 robotTargetForward = calibrationElements.Last().robotRotation * Vector3.forward;
@@ -156,10 +176,7 @@ public class MarkerCalibration : MonoBehaviour
             //float theta = Quaternion.Angle(robotInitialRotation, robotTargetRotation) * Mathf.Deg2Rad; // unsigned
             float robotRotationAngle = Mathf.DeltaAngle(angleInitial, angleTarget);  // signed
 
-            Debug.Log("Winkel: " + robotRotationAngle);
-            Debug.Log("Distanz: " + directionRobotPath.magnitude);
-
-            if (directionRobotPath.magnitude < 0.01 && Mathf.Abs(robotRotationAngle) >= 10)  // check whether robot has moved less than 1cm in one direction
+            if (Mathf.Abs(robotRotationAngle) >= 10)  // check whether robot has moved less than 1cm in one direction
             {
                 //Where:
                 // - p0 = Initial marker position
@@ -168,7 +185,7 @@ public class MarkerCalibration : MonoBehaviour
 
                 // Marker position relative to the first element in order to isolate rotation
                 Vector3 relativeLastMarkerPosition = calibrationElements.Last().calibrationObject.transform.position;
-                relativeLastMarkerPosition -= calibrationElements.Last().robotPosition - calibrationElements[i].robotPosition; // <== Obsolet?
+                relativeLastMarkerPosition -= RobotOrigin.transform.rotation * (calibrationElements.Last().robotPosition - calibrationElements[i].robotPosition);
 
                 //Find the vector between p0 and p1
                 Vector3 markerPositionDiff = relativeLastMarkerPosition - calibrationElements[i].calibrationObject.transform.position;
@@ -200,7 +217,7 @@ public class MarkerCalibration : MonoBehaviour
                 Vector3 centre = midpoint + dir * offset;
 
                 // Calculate origin of robot odometry in the unity world frame
-                Vector3 origin = centre - calibrationElements[i].robotPosition;
+                Vector3 origin = centre - RobotOrigin.transform.rotation * calibrationElements[i].robotPosition;
 
                 // Add origin and offset to list
                 calibrationElements.Last().robotOrigins.Add(origin);
@@ -211,45 +228,22 @@ public class MarkerCalibration : MonoBehaviour
                 calibrationElements.Last().robotOrigins.Add(new Vector3(float.NaN, float.NaN, float.NaN));
                 calibrationElements.Last().markerOffsets.Add(float.NaN);
             }
-
-            // Calculate orientation of origin
-            if (directionRobotPath.magnitude >= 0.05 && Mathf.Abs(robotRotationAngle) < 3)  // check whether robot has moved more than 5cm in one direction
-            {
-                Vector3 directionMarkerPath = calibrationElements.Last().calibrationObject.transform.position;
-                //directionMarkerPath -= calibrationElements.Last().robotPosition - origin;
-                //directionMarkerPath = Quaternion.Euler(0, -theta, 0) * directionMarkerPath;
-                //directionMarkerPath += calibrationElements.Last().robotPosition + origin;
-                directionMarkerPath -= calibrationElements[i].calibrationObject.transform.position;
-                float angleFromMarkerPathToWorldForward = Vector3.SignedAngle(directionMarkerPath, Vector3.forward, Vector3.up);
-                Vector3 robotOriginDirection = Quaternion.Euler(0, angleFromMarkerPathToWorldForward, 0) * directionRobotPath;
-                robotOriginDirection = Quaternion.Euler(0, -calibrationElements[i].robotRotation.eulerAngles.y, 0) * robotOriginDirection;
-                float angleFromWorldForwardToRobotOriginDirection = Vector3.SignedAngle(Vector3.forward, robotOriginDirection, Vector3.up);
-                calibrationElements.Last().angleFromWorldForwardToRobotOriginDirection.Add(angleFromWorldForwardToRobotOriginDirection);
-            }
-            else
-            {
-                calibrationElements.Last().angleFromWorldForwardToRobotOriginDirection.Add(float.NaN);
-            }
         }
     }
 
     private void Calibrate()
     {
         Vector3 meanOrigin = CalculateMeanOrigin();
-        Quaternion meanOriginOrientation = CalculateMeanOriginOrientation();
         float meanOffset = CalculateMeanOffset();
 
         if (meanOrigin.IsValidVector() && !float.IsNaN(meanOffset))  // returns false if n was 0
         {
-            RobotOrigin.SetActive(true);
             RobotOrigin.transform.position = meanOrigin;
-            RobotOrigin.transform.rotation = meanOriginOrientation;
             markerOffset = meanOffset;
             isCalibrated = true;
         }
         else
         {
-            RobotOrigin.SetActive(false);
             isCalibrated = false;
         }
     }
@@ -271,25 +265,6 @@ public class MarkerCalibration : MonoBehaviour
         }
         meanOrigin /= n;
         return meanOrigin;
-    }
-
-    private Quaternion CalculateMeanOriginOrientation ()
-    {
-        float meanAngle = 0;
-        int n = 0;
-        foreach (CalibrationElements calibrationElement in calibrationElements)
-        {
-            foreach (float angle in calibrationElement.angleFromWorldForwardToRobotOriginDirection)
-            {
-                if (!float.IsNaN(angle))
-                {
-                    meanAngle += angle;
-                    n++;
-                }
-            }
-        }
-        meanAngle /= n;
-        return (n != 0 ? Quaternion.Euler(0, meanAngle, 0) : Quaternion.identity);
     }
 
     private float CalculateMeanOffset()
@@ -319,8 +294,8 @@ public class MarkerCalibration : MonoBehaviour
             {
                 Debug.Log("Show rotation centre");
                 trajectoryVisualization.SetActive(true);
-                trajectoryVisualization.transform.position = RobotOrigin.transform.position + robotCurrentPosition;
-                trajectoryVisualization.transform.rotation = robotCurrentRotation * RobotOrigin.transform.rotation;    // korrekt????
+                trajectoryVisualization.transform.position = robotCurrentPosition.Robot2UnityFrame(RobotOrigin.transform);
+                trajectoryVisualization.transform.rotation = robotCurrentRotation.Robot2UnityFrame(RobotOrigin.transform);
                 Vector3 trajectoryScale = new Vector3(2 * markerOffset, trajectoryVisualization.transform.GetChild(0).localScale.y, 2 * markerOffset);
                 trajectoryVisualization.transform.GetChild(0).localScale = trajectoryScale;
             }

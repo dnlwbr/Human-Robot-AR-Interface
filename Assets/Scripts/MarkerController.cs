@@ -32,16 +32,12 @@ public class MarkerController : MonoBehaviour
 
     void OnEnable()
     {
+        isInitialized = false;  // Must be placed here instead of in OnDisable, otherwise callback function will change the value again
         markerInitialPosition = gameObject.transform.position;
         markerInitialRotation = gameObject.transform.rotation;
         // Bug in callback? Access to RobotOrigin.transform (in callback) throws error
         robotOriginPosition = GameObject.Find("RobotOrigin").transform.position;
         robotOriginRotation = GameObject.Find("RobotOrigin").transform.rotation;
-    }
-
-    void OnDisable()
-    {
-        isInitialized = false;
     }
 
     // Update is called once per frame
@@ -54,9 +50,9 @@ public class MarkerController : MonoBehaviour
     private void callback(nav_msgs.Odometry message)
     {
         robotCurrentPosition = Conversions.NavMsgsOdomPositionToVec3(message).Ros2Unity();
-        robotCurrentPosition = robotOriginRotation * robotCurrentPosition;
-        robotCurrentPosition += robotOriginPosition;
+        robotCurrentPosition = robotCurrentPosition.Robot2UnityFrame(robotOriginPosition, robotOriginRotation);
         robotCurrentRotation = Conversions.NavMsgsOdomOrientationToQuaternion(message).Ros2Unity();
+        robotCurrentRotation = robotCurrentRotation.Robot2UnityFrame(robotOriginRotation);
 
         if (!isInitialized)
         {
