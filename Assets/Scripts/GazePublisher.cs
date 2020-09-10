@@ -1,4 +1,5 @@
 ﻿using Microsoft.MixedReality.Toolkit;
+using RosSharp;
 using RosSharp.RosBridgeClient;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,8 +15,8 @@ public class GazePublisher : MonoBehaviour
     private RosSocket rosSocket;
     private string publicationIdPose;
     private string publicationIdPoint;
-    private geometry_msgs.Pose Gaze;
-    private geometry_msgs.Point HitPoint;
+    private geometry_msgs.PoseStamped Gaze;
+    private geometry_msgs.PointStamped HitPoint;
     private Vector3 GazeOrigin;
     private Vector3 GazeDirection;
     private Vector3 HitPosition;
@@ -26,16 +27,18 @@ public class GazePublisher : MonoBehaviour
     {
         RosSharp = GameObject.Find("RosSharp");
         rosSocket = RosSharp.GetComponent<RosConnector>().RosSocket;
-        publicationIdPose = rosSocket.Advertise<geometry_msgs.Pose>("/HoloLens2/Gaze");
-        publicationIdPoint = rosSocket.Advertise<geometry_msgs.Point>("/HoloLens2/Gaze/HitPoint");
-        Gaze = new geometry_msgs.Pose();
-        HitPoint = new geometry_msgs.Point();
+        publicationIdPose = rosSocket.Advertise<geometry_msgs.PoseStamped>("/HoloLens2/Gaze");
+        publicationIdPoint = rosSocket.Advertise<geometry_msgs.PointStamped>("/HoloLens2/Gaze/HitPoint");
+        Gaze = new geometry_msgs.PoseStamped();
+        HitPoint = new geometry_msgs.PointStamped();
+        Gaze.header.frame_id = "depth_camera_link";
+        HitPoint.header.frame_id = "depth_camera_link";
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (CoreServices.InputSystem.EyeGazeProvider.IsEyeTrackingEnabledAndValid)
+        if (CoreServices.InputSystem.EyeGazeProvider.IsEyeTrackingEnabledAndValid && gameObject.transform.root.GetComponent<MarkerCalibration>().isCalibrated)
         {
             PublishGazeDirectionOrigin();
             PublishGazeHitPoint();
@@ -46,12 +49,16 @@ public class GazePublisher : MonoBehaviour
     {
         GazeOrigin = CoreServices.InputSystem.EyeGazeProvider.GazeOrigin;
         GazeOrigin -= gameObject.transform.position;
-        Gaze.position = Conversions.Vec3ToGeoMsgsPoint(GazeOrigin.Unity2Kinect());
+        GazeOrigin = Quaternion.Inverse(gameObject.transform.rotation) * GazeOrigin;
+        Gaze.pose.position = Conversions.Vec3ToGeoMsgsPoint(GazeOrigin.Unity2Kinect());
 
         GazeDirection = CoreServices.InputSystem.EyeGazeProvider.GazeDirection;
-        GazeDirection -= gameObject.transform.rotation.eulerAngles;
-        Gaze.orientation = Conversions.Vec3ToGeoMsgsQuaternion(GazeDirection.Unity2Kinect());
-        
+        GazeDirection = Quaternion.Inverse(gameObject.transform.rotation) * GazeDirection;
+        /* Quaternion.identity points towards Kinect's x-axis. Therefore use Unity.x = Vector.right because for orientations
+           with quaternions RVIZ uses the x-axis as the forward axis instead of the Kinect's forward axis z:  */
+        Gaze.pose.orientation = Conversions.QuaternionToGeoMsgsQuaternion(Quaternion.FromToRotation(Vector3.right, GazeDirection).Unity2Kinect());
+
+        Gaze.header.Update();
         rosSocket.Publish(publicationIdPose, Gaze);
 
         //Debug.Log("Gaze is looking in direction: " + GazeDirection);
@@ -62,7 +69,10 @@ public class GazePublisher : MonoBehaviour
     {
         HitPosition = CoreServices.InputSystem.EyeGazeProvider.HitPosition;
         HitPosition -= gameObject.transform.position;
-        HitPoint = Conversions.Vec3ToGeoMsgsPoint(HitPosition.Unity2Kinect());
+        HitPosition = Quaternion.Inverse(gameObject.transform.rotation) * HitPosition;
+        HitPoint.point = Conversions.Vec3ToGeoMsgsPoint(HitPosition.Unity2Kinect());
+
+        HitPoint.header.Update();
         rosSocket.Publish(publicationIdPoint, HitPoint);
 
         //HitNormal = CoreServices.InputSystem.EyeGazeProvider.HitNormal;
