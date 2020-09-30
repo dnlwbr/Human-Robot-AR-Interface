@@ -6,21 +6,31 @@ using UnityEngine;
 
 namespace HumanRobotInterface
 {
-    public class FollowEyeGazeHitPoint : MonoBehaviour
+    public class SetObjectAtEyeGazeHitPoint : MonoBehaviour
     {
+        [Tooltip("Set position only if Visuals are not already active.")]
+        [SerializeField]
+        private bool onlyIfVisualsAreInactive = true;
+
+        private GameObject Visuals;
+
         // Start is called before the first frame update
         void Start()
         {
-
+            Visuals = gameObject.transform.Find("Visuals").gameObject;
         }
 
         public void SetPosition()
         {
+            if (onlyIfVisualsAreInactive && Visuals.activeSelf)
+                return;
+
             var eyeGazeProvider = CoreServices.InputSystem?.EyeGazeProvider;
             if (eyeGazeProvider != null)
             {
                 gameObject.transform.position = CoreServices.InputSystem.EyeGazeProvider.HitPosition;
                 gameObject.transform.LookAt(CameraCache.Main.transform);
+                transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z);
 
                 EyeTrackingTarget lookedAtEyeTarget = EyeTrackingTarget.LookedAtEyeTarget;
 
@@ -46,6 +56,7 @@ namespace HumanRobotInterface
                     // Show the object at the hit position of the user's eye gaze ray with the target.
                     gameObject.transform.position = CoreServices.InputSystem.EyeGazeProvider.HitPosition;
                 }
+                Visuals.SetActive(true);
             }
         }
     }
