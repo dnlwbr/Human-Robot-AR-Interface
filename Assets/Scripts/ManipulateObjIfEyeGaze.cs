@@ -250,7 +250,10 @@ namespace HumanRobotInterface
                 }
 
                 objIsGrabbed = true;
-                EyeTrackingDemoUtils.GameObject_ChangeTransparency(gameObject, transparency_inTransition, ref originalTransparency);
+                if (transparency_inTransition < 1)
+                {
+                    EyeTrackingDemoUtils.GameObject_ChangeTransparency(gameObject, transparency_inTransition, ref originalTransparency);
+                }
 
                 Rigidbody rbody = GetComponent<Rigidbody>();
                 if (rbody != null)
@@ -280,7 +283,10 @@ namespace HumanRobotInterface
 
                 objIsGrabbed = false;
 
-                EyeTrackingDemoUtils.GameObject_ChangeTransparency(gameObject, originalTransparency);
+                if (transparency_inTransition < 1)
+                {
+                    EyeTrackingDemoUtils.GameObject_ChangeTransparency(gameObject, originalTransparency);
+                }
                 Rigidbody rbody = GetComponent<Rigidbody>();
                 if (rbody != null)
                 {
