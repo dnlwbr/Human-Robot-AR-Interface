@@ -3,37 +3,40 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SetIP : MonoBehaviour
+namespace HumanRobotInterface
 {
-    public TouchScreenKeyboard keyboard;
-    public static string keyboardText = "";
-    private GameObject RosSharp;
-
-    // Start is called before the first frame update
-    void Start()
+    public class SetIP : MonoBehaviour
     {
-        RosSharp = GameObject.Find("RosSharp");
-    }
+        public TouchScreenKeyboard keyboard;
+        public static string keyboardText = "";
+        private GameObject RosSharp;
 
-    public void OpenSystemKeyboard()
-    {
-        keyboard = TouchScreenKeyboard.Open("", TouchScreenKeyboardType.Default, false, false, false, false);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        //if (TouchScreenKeyboard.visible == false && keyboard != null)
-        if (keyboard != null)
+        // Start is called before the first frame update
+        void Start()
         {
-            keyboardText = keyboard.text;
+            RosSharp = GameObject.Find("RosSharp");
+        }
 
-            if (keyboard.done == true)
+        public void OpenSystemKeyboard()
+        {
+            keyboard = TouchScreenKeyboard.Open("", TouchScreenKeyboardType.Default, false, false, false, false);
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+            //if (TouchScreenKeyboard.visible == false && keyboard != null)
+            if (keyboard != null)
             {
-                RosSharp.GetComponent<RosConnector>().RosSocket.Close();
-                RosSharp.GetComponent<RosConnector>().RosBridgeServerUrl = keyboardText;
-                RosSharp.GetComponent<RosConnector>().Awake();
-                keyboard = null;
+                keyboardText = keyboard.text;
+
+                if (keyboard.done == true)
+                {
+                    RosSharp.GetComponent<RosConnector>().RosSocket.Close();
+                    RosSharp.GetComponent<RosConnector>().RosBridgeServerUrl = keyboardText;
+                    RosSharp.GetComponent<RosConnector>().Awake();
+                    keyboard = null;
+                }
             }
         }
     }

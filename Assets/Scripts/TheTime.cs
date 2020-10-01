@@ -6,23 +6,26 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TheTime : MonoBehaviour
+namespace HumanRobotInterface
 {
-    DateTime localDate;
-    private TextMeshPro TextMeshProComponent;
-    private CultureInfo culture;
-
-    // Start is called before the first frame update
-    void Start()
+    public class TheTime : MonoBehaviour
     {
-        TextMeshProComponent = GetComponent<TextMeshPro>();
-        culture = CultureInfo.CreateSpecificCulture("de-DE");
-    }
+        DateTime localDate;
+        private TextMeshPro TextMeshProComponent;
+        private CultureInfo culture;
 
-    // Update is called once per frame
-    void Update()
-    {
-        localDate = DateTime.Now;
-        TextMeshProComponent.text = localDate.ToString("t", culture);
+        // Start is called before the first frame update
+        void Start()
+        {
+            TextMeshProComponent = GetComponent<TextMeshPro>();
+            culture = CultureInfo.CreateSpecificCulture("de-DE");
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+            localDate = DateTime.Now;
+            TextMeshProComponent.text = localDate.ToString("t", culture);
+        }
     }
 }
