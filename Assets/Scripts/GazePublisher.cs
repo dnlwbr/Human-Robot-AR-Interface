@@ -4,7 +4,7 @@ using RosSharp.RosBridgeClient;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using geometry_msgs = RosSharp.RosBridgeClient.Messages.Geometry;
+using geometry_msgs = RosSharp.RosBridgeClient.MessageTypes.Geometry;
 
 
 namespace HumanRobotInterface

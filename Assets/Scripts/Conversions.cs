@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using geometry_msgs = RosSharp.RosBridgeClient.Messages.Geometry;
-using nav_msgs = RosSharp.RosBridgeClient.Messages.Navigation;
+using geometry_msgs = RosSharp.RosBridgeClient.MessageTypes.Geometry;
+using nav_msgs = RosSharp.RosBridgeClient.MessageTypes.Nav;
 
 
 namespace HumanRobotInterface
@@ -111,18 +111,18 @@ namespace HumanRobotInterface
         public static Vector3 NavMsgsOdomPositionToVec3(nav_msgs.Odometry message)
         {
             return new Vector3(
-                message.pose.pose.position.x,
-                message.pose.pose.position.y,
-                message.pose.pose.position.z);
+                (float)message.pose.pose.position.x,
+                (float)message.pose.pose.position.y,
+                (float)message.pose.pose.position.z);
         }
 
         public static Quaternion NavMsgsOdomOrientationToQuaternion(nav_msgs.Odometry message)
         {
             return new Quaternion(
-                message.pose.pose.orientation.x,
-                message.pose.pose.orientation.y,
-                message.pose.pose.orientation.z,
-                message.pose.pose.orientation.w);
+                (float)message.pose.pose.orientation.x,
+                (float)message.pose.pose.orientation.y,
+                (float)message.pose.pose.orientation.z,
+                (float)message.pose.pose.orientation.w);
         }
     }
 }

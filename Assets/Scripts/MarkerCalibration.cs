@@ -6,7 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using nav_msgs = RosSharp.RosBridgeClient.Messages.Navigation;
+using nav_msgs = RosSharp.RosBridgeClient.MessageTypes.Nav;
 
 
 namespace HumanRobotInterface

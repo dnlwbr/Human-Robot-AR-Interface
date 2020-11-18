@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using sensor_msgs = RosSharp.RosBridgeClient.Messages.Sensor;
+using sensor_msgs = RosSharp.RosBridgeClient.MessageTypes.Sensor;
 
 
 namespace HumanRobotInterface
