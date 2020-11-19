@@ -116,10 +116,10 @@ namespace HumanRobotInterface
             {
                 RobotOrigin.transform.forward = Quaternion.Inverse(robotCurrentRotation) * caller.transform.forward;
                 isOriented = true;
-                Vector3 robotCenter = caller.transform.position + Quaternion.LookRotation(caller.transform.forward, Vector3.up) * (new Vector3(-0.124f, 0.473f, -0.071f));
+                Vector3 robotCenter = caller.transform.position + Quaternion.LookRotation(caller.transform.forward, Vector3.up) * (new Vector3(-0.124f, 0.473f, -0.071f)); //TODO anpasssen (directionMarkerToCenter)
                 RobotOrigin.transform.position = robotCenter - RobotOrigin.transform.rotation * robotCurrentPosition;
                 isCalibrated = true;
-                // Wenn erneut ausgewählt, nachdem Calibriert wurde, dann wird es auf default zurück gesetzt. Ist das erwünscht?
+                // If selected again after calibration, it will be reset to default. Is this desired?
                 Debug.Log("Direction marker selected.");
                 VisualizeOrigin();
                 VisualizeCentre();
