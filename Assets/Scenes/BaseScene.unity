@@ -764,7 +764,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 224944545}
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0.1358}
+  m_LocalPosition: {x: 0, y: 0.1, z: 0.1358}
   m_LocalScale: {x: 0.03, y: 0.15, z: 0.03}
   m_Children: []
   m_Father: {fileID: 1684224193}
@@ -1371,8 +1371,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 505152267}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.03, y: 0.5, z: 0.03}
+  m_LocalPosition: {x: 0, y: 0.6, z: 0}
+  m_LocalScale: {x: 0.03, y: 0.6, z: 0.03}
   m_Children: []
   m_Father: {fileID: 1863087530}
   m_RootOrder: 1
@@ -2595,7 +2595,7 @@ Transform:
   m_GameObject: {fileID: 817620590}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.03, y: 0.5, z: 0.03}
+  m_LocalScale: {x: 0.03, y: 0.6, z: 0.03}
   m_Children: []
   m_Father: {fileID: 1684224193}
   m_RootOrder: 0
@@ -2741,7 +2741,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   QRCodeContent: Uni Tuebingen
-  boardThickness: 3
+  _boardThickness: 3
 --- !u!4 &859879978
 Transform:
   m_ObjectHideFlags: 0
@@ -3533,7 +3533,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   QRCodeContent: Uni T\uFFC3\uFFBCbingen
-  boardThickness: 3
+  _boardThickness: 3
 --- !u!65 &1184044554
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4691,7 +4691,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1684224192}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 817620591}
@@ -4761,7 +4761,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4350927174637364, guid: a4a755c01001f17429f9ba5774973b4f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4350927174637364, guid: a4a755c01001f17429f9ba5774973b4f, type: 3}
       propertyPath: m_LocalPosition.z

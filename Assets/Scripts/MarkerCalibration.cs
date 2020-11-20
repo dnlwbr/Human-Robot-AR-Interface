@@ -69,7 +69,7 @@ namespace HumanRobotInterface
 
         void OnDisable()
         {
-            // The CalibrationMarkerDirection game object must first be set to the correct position so that the value fits
+            // During the runtime the CalibrationMarkerDirection game object must first be set to the correct position so that the value fits
             Transform directionMarkerTransfrom = GameObject.Find("CalibrationMarkerDirection").transform;
             Vector3 directionMarkerToCenter = trajectoryVisualization.transform.position - directionMarkerTransfrom.position;
             directionMarkerToCenter = Quaternion.Inverse(Quaternion.LookRotation(directionMarkerTransfrom.forward, Vector3.up)) * directionMarkerToCenter;
@@ -116,8 +116,15 @@ namespace HumanRobotInterface
             {
                 RobotOrigin.transform.forward = Quaternion.Inverse(robotCurrentRotation) * caller.transform.forward;
                 isOriented = true;
-                Vector3 robotCenter = caller.transform.position + Quaternion.LookRotation(caller.transform.forward, Vector3.up) * (new Vector3(-0.124f, 0.473f, -0.071f)); //TODO anpasssen (directionMarkerToCenter)
-                RobotOrigin.transform.position = robotCenter - RobotOrigin.transform.rotation * robotCurrentPosition;
+                Vector3 directionMarker2base_footprint = new Vector3(-0.0362f, 0, 0); // --> mid of marker
+                directionMarker2base_footprint += new Vector3(0, 0, -caller.GetComponent<QRCodeTarget>().boardThickness/1000); // --> back of marker
+                directionMarker2base_footprint += new Vector3(0, -0.0862f, 0); // --> bottom of marker
+                directionMarker2base_footprint += new Vector3(0, 0, -0.04f); // --> spine (spine is 8x8cm)
+                directionMarker2base_footprint += new Vector3(0, -0.004f, 0); // --> mounting of spine (4mm thick)
+                directionMarker2base_footprint += new Vector3(0, -0.0021f, 0); // --> mid of torso plate (torso plate is 4.2mm thick)
+                directionMarker2base_footprint += new Vector3(0, -0.589f, 0.085f); // --> base_footprint
+                Vector3 robot_base_footprint = caller.transform.position + Quaternion.LookRotation(caller.transform.forward, Vector3.up) * directionMarker2base_footprint;
+                RobotOrigin.transform.position = robot_base_footprint - RobotOrigin.transform.rotation * robotCurrentPosition;
                 isCalibrated = true;
                 // If selected again after calibration, it will be reset to default. Is this desired?
                 Debug.Log("Direction marker selected.");
@@ -221,6 +228,9 @@ namespace HumanRobotInterface
 
                     // Calculate origin of robot odometry in the unity world frame
                     Vector3 origin = centre - RobotOrigin.transform.rotation * calibrationElements[i].robotPosition;
+
+                    // Set y coordinate of origin to the default value (calculated from the measurements base on the directionMarker's height above the floor)
+                    origin.y = RobotOrigin.transform.position.y;
 
                     // Add origin and offset to list
                     calibrationElements.Last().robotOrigins.Add(origin);

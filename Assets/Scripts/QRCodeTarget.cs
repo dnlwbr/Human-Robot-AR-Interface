@@ -15,7 +15,9 @@ namespace HumanRobotInterface
 
         [SerializeField]
         [Tooltip("Thickness of the board or paper in the mount on which the QR code is printed [in mm].")]
-        private float boardThickness = 5;
+        private float _boardThickness = 3;
+
+        public float boardThickness { get { return _boardThickness; } }
 
         private GameObject qrCodeObject = null;
 
@@ -23,10 +25,10 @@ namespace HumanRobotInterface
         void Start()
         {
             QRCodeContent = System.Text.RegularExpressions.Regex.Unescape(@QRCodeContent);  // Convert unicodes to the respective characters
-            boardThickness /= 1000;  // mm -> m (Unity units)
+            _boardThickness /= 1000;  // mm -> m (Unity units)
             if (gameObject.transform.Find("Visuals") != null)
             {
-                gameObject.transform.Find("Visuals").transform.localPosition -= new Vector3(0, 0, boardThickness);
+                gameObject.transform.Find("Visuals").transform.localPosition -= new Vector3(0, 0, _boardThickness);
             }
         }
 
