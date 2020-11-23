@@ -10,10 +10,10 @@ using tf2_msgs = RosSharp.RosBridgeClient.MessageTypes.Tf2.TFMessage;
 namespace HumanRobotInterface
 {
     /// <summary>
-    /// Publishes the transformation from the origin in Unity's world coordinate system to
-    /// the origin in the odometry frame of the robot.
+    /// Publishes transformation from the origin in Unity's world coordinate system to
+    /// the Azure Kinect's depth sensor coordinate system.
     /// </summary>
-    public class UnityOrigin2OdomTFPublisher : MonoBehaviour
+    public class UnityOrigin2KinectTFPublisher : MonoBehaviour
     {
         private GameObject RosSharp;
         private RosSocket rosSocket;
@@ -24,7 +24,7 @@ namespace HumanRobotInterface
         private geometry_msgs.TransformStamped transformStamped;
         private Vector3 translation;
         private Quaternion rotation;
-        private MarkerCalibration calibrationMarker;
+
 
         // Start is called before the first frame update
         void Start()
@@ -34,13 +34,12 @@ namespace HumanRobotInterface
             publicationId = rosSocket.Advertise<tf2_msgs>("/tf");
             transformMsg = new tf2_msgs();
             transformStamped = new geometry_msgs.TransformStamped();
-            calibrationMarker = GameObject.Find("CalibrationMarkerKinect").GetComponent<MarkerCalibration>();
         }
 
         // Update is called once per frame
         void Update()
         {
-            if (Time.realtimeSinceStartup - previousRealTime >= 1 / rate && calibrationMarker.isCalibrated)
+            if (Time.realtimeSinceStartup - previousRealTime >= 1 / rate && gameObject.transform.root.GetComponent<MarkerCalibration>().isCalibrated)
             {
                 PublishTransformation();
                 previousRealTime = Time.realtimeSinceStartup;
@@ -51,7 +50,7 @@ namespace HumanRobotInterface
         {
             transformStamped.header.Update();
             transformStamped.header.frame_id = "unity_origin";
-            transformStamped.child_frame_id = "odom";
+            transformStamped.child_frame_id = "depth_camera_link";
 
             translation = gameObject.transform.position;
             transformStamped.transform.translation = Conversions.Vec3ToGeoMsgsVec3(translation.Unity2Ros());
