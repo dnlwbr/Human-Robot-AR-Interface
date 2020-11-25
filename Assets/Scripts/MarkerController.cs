@@ -7,12 +7,8 @@ using nav_msgs = RosSharp.RosBridgeClient.MessageTypes.Nav;
 
 namespace HumanRobotInterface
 {
-    public class MarkerController : MonoBehaviour
+    public class MarkerController : Subscriber<nav_msgs.Odometry>
     {
-        private GameObject RosSharp;
-        private RosSocket rosSocket;
-        private string subscriptionId;
-        private string topic = "/odom";
         private Vector3 robotInitialPosition;
         private Quaternion robotInitialRotation;
         private Vector3 robotCurrentPosition;
@@ -25,11 +21,9 @@ namespace HumanRobotInterface
         private bool isInitialized;
 
         // Start is called before the first frame update
-        void Start()
+        protected override void Start()
         {
-            RosSharp = GameObject.Find("RosSharp");
-            rosSocket = RosSharp.GetComponent<RosConnector>().RosSocket;
-            subscriptionId = rosSocket.Subscribe<nav_msgs.Odometry>(topic, callback, queue_length: 1);
+            base.Start();
         }
 
         void OnEnable()
@@ -49,7 +43,7 @@ namespace HumanRobotInterface
                 ProcessMessage();
         }
 
-        private void callback(nav_msgs.Odometry message)
+        protected override void callback(nav_msgs.Odometry message)
         {
             robotCurrentPosition = Conversions.NavMsgsOdomPositionToVec3(message).Ros2Unity();
             robotCurrentPosition = robotCurrentPosition.Robot2UnityFrame(robotOriginPosition, robotOriginRotation);

@@ -1,7 +1,6 @@
 ﻿using Microsoft.MixedReality.Toolkit;
 using Microsoft.MixedReality.Toolkit.Examples.Demos.EyeTracking;
 using RosSharp;
-using RosSharp.RosBridgeClient;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +10,7 @@ using nav_msgs = RosSharp.RosBridgeClient.MessageTypes.Nav;
 
 namespace HumanRobotInterface
 {
-    public class MarkerCalibration : MonoBehaviour
+    public class MarkerCalibration : Subscriber<nav_msgs.Odometry>
     {
         public bool isCalibrated { get; private set; } = false;
         public float markerOffset { get; private set; }  // Distance from rotation centre to depth sensor
@@ -24,10 +23,6 @@ namespace HumanRobotInterface
         [Tooltip("(Optional) Gameobject that visualizes trajectory.")]
         private GameObject trajectoryVisualization = null;
 
-        private GameObject RosSharp;
-        private RosSocket rosSocket;
-        private string subscriptionId;
-        private string topic = "/odom";
         private Vector3 robotCurrentPosition;
         private Quaternion robotCurrentRotation;
         private List<CalibrationElements> calibrationElements = new List<CalibrationElements>();
@@ -55,11 +50,9 @@ namespace HumanRobotInterface
         }
 
         // Start is called before the first frame update
-        void Start()
+        protected override void Start()
         {
-            RosSharp = GameObject.Find("RosSharp");
-            rosSocket = RosSharp.GetComponent<RosConnector>().RosSocket;
-            subscriptionId = rosSocket.Subscribe<nav_msgs.Odometry>(topic, callback, queue_length: 1);
+            base.Start();
         }
 
         void OnEnable()
@@ -90,7 +83,7 @@ namespace HumanRobotInterface
             RobotOrigin.transform.Find("Visuals").gameObject.SetActive(false);
         }
 
-        private void callback(nav_msgs.Odometry message)
+        protected override void callback(nav_msgs.Odometry message)
         {
             robotCurrentPosition = Conversions.NavMsgsOdomPositionToVec3(message).Ros2Unity();
             robotCurrentRotation = Conversions.NavMsgsOdomOrientationToQuaternion(message).Ros2Unity();

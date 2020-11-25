@@ -1,5 +1,4 @@
-﻿using RosSharp.RosBridgeClient;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using geometry_msgs = RosSharp.RosBridgeClient.MessageTypes.Geometry;
@@ -7,7 +6,7 @@ using geometry_msgs = RosSharp.RosBridgeClient.MessageTypes.Geometry;
 
 namespace HumanRobotInterface
 {
-    public class MovementControl : MonoBehaviour
+    public class MovementControl : Publisher<geometry_msgs.Twist>
     {
         [Header("Direction and Speed")]
         [SerializeField]
@@ -20,18 +19,12 @@ namespace HumanRobotInterface
         [Range(-1.0f, 1.0f)]
         private float angular = 0.0f;
 
-        private GameObject RosSharp;
-        private RosSocket rosSocket;
-        private string publicationId;
         private geometry_msgs.Twist twist;
-        private int frameSkip = 4;
 
         // Start is called before the first frame update
-        void Start()
+        protected override void Start()
         {
-            RosSharp = GameObject.Find("RosSharp");
-            rosSocket = RosSharp.GetComponent<RosConnector>().RosSocket;
-            publicationId = rosSocket.Advertise<geometry_msgs.Twist>("/cmd_vel");
+            base.Start();
             twist = new geometry_msgs.Twist();
 
             // Not necessary, since the default constructor initializes with zeros.
@@ -44,8 +37,7 @@ namespace HumanRobotInterface
 
         void FixedUpdate()
         {
-            if (Time.frameCount % frameSkip == 0)   // slow down publishing so that the robot can follow
-                rosSocket.Publish(publicationId, twist);
+            Publish(twist, 30);
         }
     }
 }

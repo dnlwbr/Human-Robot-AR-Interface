@@ -11,15 +11,11 @@ namespace HumanRobotInterface
 {
     /// <summary>
     /// Publishes transformation from the origin in Unity's world coordinate system to
-    /// the Azure Kinect's depth sensor coordinate system.
+    /// the Azure Kinect's camera_base frame.
     /// </summary>
-    public class UnityOrigin2KinectTFPublisher : MonoBehaviour
+    public class UnityOrigin2KinectTFPublisher : Publisher<tf2_msgs>
     {
-        private GameObject RosSharp;
-        private RosSocket rosSocket;
-        private string publicationId;
-        private float previousRealTime;
-        private float rate = 10; // in hz
+        private int rate = 10; // in hz
         private tf2_msgs transformMsg;
         private geometry_msgs.TransformStamped transformStamped;
         private Vector3 translation;
@@ -27,31 +23,25 @@ namespace HumanRobotInterface
 
 
         // Start is called before the first frame update
-        void Start()
+        protected override void Start()
         {
-            RosSharp = GameObject.Find("RosSharp");
-            rosSocket = RosSharp.GetComponent<RosConnector>().RosSocket;
-            publicationId = rosSocket.Advertise<tf2_msgs>("/tf");
+            base.Start();
             transformMsg = new tf2_msgs();
             transformStamped = new geometry_msgs.TransformStamped();
+            transformStamped.header.frame_id = "unity_origin";
+            transformStamped.child_frame_id = "camera_base";
         }
 
-        // Update is called once per frame
-        void Update()
+        void FixedUpdate()
         {
-            if (Time.realtimeSinceStartup - previousRealTime >= 1 / rate && gameObject.transform.root.GetComponent<MarkerCalibration>().isCalibrated)
+            if (gameObject.transform.root.GetComponent<MarkerCalibration>().isCalibrated)
             {
                 PublishTransformation();
-                previousRealTime = Time.realtimeSinceStartup;
             }
         }
 
-        public void PublishTransformation()
+        private void PublishTransformation()
         {
-            transformStamped.header.Update();
-            transformStamped.header.frame_id = "unity_origin";
-            transformStamped.child_frame_id = "depth_camera_link";
-
             translation = gameObject.transform.position;
             transformStamped.transform.translation = Conversions.Vec3ToGeoMsgsVec3(translation.Unity2Ros());
 
@@ -59,7 +49,8 @@ namespace HumanRobotInterface
             transformStamped.transform.rotation = Conversions.QuaternionToGeoMsgsQuaternion(rotation.Unity2Ros());
 
             transformMsg.transforms = new geometry_msgs.TransformStamped[] { transformStamped };
-            rosSocket.Publish(publicationId, transformMsg);
+            transformStamped.header.Update();
+            Publish(transformMsg, rate);
         }
     }
 }

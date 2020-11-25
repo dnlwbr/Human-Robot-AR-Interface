@@ -875,6 +875,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1eda06ba2cf06434b915bce76833c6c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  topic: /tf
+  calibrationMarker: {fileID: 859879979}
 --- !u!114 &241779055
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2578,6 +2580,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 483baa4bd3ac69f4690c750231957bb8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  topic: /cmd_vel
   linear: 0
   angular: -0.2
 --- !u!1 &817620590
@@ -2782,6 +2785,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fbe258bfb1092b4eb654c649d7de6d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  topic: /odom
+  timeStep: 0
+  queueLength: 1
   RobotOrigin: {fileID: 231183169}
   trajectoryVisualization: {fileID: 1863087529}
 --- !u!114 &859879980
@@ -2796,6 +2802,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 586ae359eb8543e4fb0eb975317f4d2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  topic: /odom
+  timeStep: 0
+  queueLength: 1
 --- !u!114 &859879981
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9772,7 +9781,6 @@ GameObject:
   - component: {fileID: 1932233644}
   - component: {fileID: 1932233643}
   - component: {fileID: 1932233642}
-  - component: {fileID: 1932233645}
   - component: {fileID: 1932233646}
   m_Layer: 0
   m_Name: Center
@@ -9855,18 +9863,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1932233640}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &1932233645
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1932233640}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30ff9eeeb7e833b48b5eca0d98199e42, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1932233646
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10719,6 +10715,7 @@ GameObject:
   - component: {fileID: 2057560021}
   - component: {fileID: 2057560020}
   - component: {fileID: 2057560019}
+  - component: {fileID: 2057560022}
   m_Layer: 0
   m_Name: Depth
   m_TagString: Untagged
@@ -10801,6 +10798,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2057560017}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &2057560022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2057560017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30ff9eeeb7e833b48b5eca0d98199e42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  topic: /tf
 --- !u!114 &2071293818 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2941753179112369455, guid: d7a95106a0331134db596f593a2d20e4,
@@ -11466,6 +11476,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 483baa4bd3ac69f4690c750231957bb8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  topic: /cmd_vel
   linear: 0
   angular: 0.2
 --- !u!4 &450163821950673991
@@ -11541,9 +11552,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc18ca5bb6a8b024aa838047c84e7982, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  meshRenderer: {fileID: 3348377780357932456}
   topic: /rgb/image_raw/compressed
-  TimeStep: 40
+  timeStep: 40
+  queueLength: 1
+  meshRenderer: {fileID: 3348377780357932456}
 --- !u!114 &1916591963793313226
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15736,6 +15748,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 483baa4bd3ac69f4690c750231957bb8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  topic: /cmd_vel
   linear: 0.2
   angular: 0
 --- !u!114 &8261790630265041371
@@ -16190,6 +16203,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 483baa4bd3ac69f4690c750231957bb8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  topic: /cmd_vel
   linear: -0.2
   angular: 0
 --- !u!4 &8411219696576430386
