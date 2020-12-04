@@ -10,7 +10,7 @@ using geometry_msgs = RosSharp.RosBridgeClient.MessageTypes.Geometry;
 namespace HumanRobotInterface
 {
     /// <summary>
-    /// Publishes gaze in the frame of the Azure Kinect's depth sensor.
+    /// Publishes gaze in the frame of the Azure Kinect's RGB camera.
     /// </summary>
     public class GazePublisher : MonoBehaviour
     {
@@ -34,8 +34,8 @@ namespace HumanRobotInterface
             publicationIdPoint = rosSocket.Advertise<geometry_msgs.PointStamped>("/HoloLens2/Gaze/HitPoint");
             Gaze = new geometry_msgs.PoseStamped();
             HitPoint = new geometry_msgs.PointStamped();
-            Gaze.header.frame_id = "depth_camera_link";
-            HitPoint.header.frame_id = "depth_camera_link";
+            Gaze.header.frame_id = "rgb_camera_link";
+            HitPoint.header.frame_id = "rgb_camera_link";
         }
 
         // Update is called once per frame
