@@ -10716,6 +10716,7 @@ GameObject:
   - component: {fileID: 2057560020}
   - component: {fileID: 2057560019}
   - component: {fileID: 2057560022}
+  - component: {fileID: 2057560023}
   m_Layer: 0
   m_Name: Depth
   m_TagString: Untagged
@@ -10808,6 +10809,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 30ff9eeeb7e833b48b5eca0d98199e42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  topic: /tf
+--- !u!114 &2057560023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2057560017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f08a2d5823dd0149b5235ef9ea94f10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   topic: /tf
