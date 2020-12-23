@@ -13,7 +13,6 @@ namespace HumanRobotInterface
     public class MarkerCalibration : Subscriber<nav_msgs.Odometry>
     {
         public bool isCalibrated { get; private set; } = false;
-        public float markerOffset { get; private set; }  // Distance from rotation centre to depth sensor
 
         [SerializeField]
         [Tooltip("Gameobject that visualizes the origin of the robot's odometry.")]
@@ -21,11 +20,13 @@ namespace HumanRobotInterface
 
         [SerializeField]
         [Tooltip("(Optional) Gameobject that visualizes trajectory.")]
-        private GameObject trajectoryVisualization = null;
+        private GameObject footprintVisualization = null;
 
         private Vector3 robotCurrentPosition;
         private Quaternion robotCurrentRotation;
         private List<CalibrationElements> calibrationElements = new List<CalibrationElements>();
+        private Transform base_footprint;
+        private float markerOffset; // Distance from rotation centre to depth sensor
         private bool isInitialized;
         private bool isOriented;
 
@@ -53,6 +54,7 @@ namespace HumanRobotInterface
         protected override void Start()
         {
             base.Start();
+            base_footprint = gameObject.transform.root;
         }
 
         void OnEnable()
@@ -62,12 +64,6 @@ namespace HumanRobotInterface
 
         void OnDisable()
         {
-            // During the runtime the CalibrationMarkerDirection game object must first be set to the correct position so that the value fits
-            Transform directionMarkerTransfrom = GameObject.Find("CalibrationMarkerDirection").transform;
-            Vector3 directionMarkerToCenter = trajectoryVisualization.transform.position - directionMarkerTransfrom.position;
-            directionMarkerToCenter = Quaternion.Inverse(Quaternion.LookRotation(directionMarkerTransfrom.forward, Vector3.up)) * directionMarkerToCenter;
-            Debug.Log("Marker to center: (x, y, z) = " + directionMarkerToCenter.ToString("F3"));
-
             isOriented = false;
 
             foreach (CalibrationElements calibrationElement in calibrationElements)
@@ -77,9 +73,22 @@ namespace HumanRobotInterface
             calibrationElements.Clear();
 
             if (!isCalibrated)
+            {
                 gameObject.SetActive(false);
-
-            trajectoryVisualization.SetActive(false);
+            }
+            else
+            {
+                Vector3 directionMarker2base_footprint = -GameObject.Find("CalibrationMarkerDirection").transform.localPosition;
+                Debug.Log(
+                    "#######################################################" + System.Environment.NewLine +
+                    "directionMarker -> base_footprint:" + System.Environment.NewLine +
+                    "-------------------------------------------------------" + System.Environment.NewLine +
+                    "Unity: (x, y, z) = " + directionMarker2base_footprint.ToString("F4") + System.Environment.NewLine +
+                    "ROS:   (x, y, z) = " + directionMarker2base_footprint.Unity2Ros().ToString("F4") + System.Environment.NewLine +
+                    "#######################################################");
+            }
+                
+            footprintVisualization.SetActive(false);
             RobotOrigin.transform.Find("Visuals").gameObject.SetActive(false);
         }
 
@@ -101,14 +110,16 @@ namespace HumanRobotInterface
 
             if (!isInitialized)
             {
-                Debug.Log("Marker is selected, but the robot position is not yet initialized.");
+                Debug.LogWarning("Marker is selected, but the robot position is not yet initialized.");
                 return;
             }
 
             if (caller.name == "CalibrationMarkerDirection")
+            // If selected again after calibration, it will be reset to default. Is this desired?
             {
                 RobotOrigin.transform.forward = Quaternion.Inverse(robotCurrentRotation) * caller.transform.forward;
                 isOriented = true;
+
                 Vector3 directionMarker2base_footprint = new Vector3(-0.0362f, 0, 0); // --> mid of marker
                 directionMarker2base_footprint += new Vector3(0, 0, -caller.GetComponent<QRCodeTarget>().boardThickness/1000); // --> back of marker
                 directionMarker2base_footprint += new Vector3(0, -0.0862f, 0); // --> bottom of marker
@@ -116,10 +127,11 @@ namespace HumanRobotInterface
                 directionMarker2base_footprint += new Vector3(0, -0.004f, 0); // --> mounting of spine (4mm thick)
                 directionMarker2base_footprint += new Vector3(0, -0.0021f, 0); // --> mid of torso plate (torso plate is 4.2mm thick)
                 directionMarker2base_footprint += new Vector3(0, -0.589f, 0.085f); // --> base_footprint
-                Vector3 robot_base_footprint = caller.transform.position + Quaternion.LookRotation(caller.transform.forward, Vector3.up) * directionMarker2base_footprint;
-                RobotOrigin.transform.position = robot_base_footprint - RobotOrigin.transform.rotation * robotCurrentPosition;
+                base_footprint.position = caller.transform.position + Quaternion.LookRotation(caller.transform.forward, Vector3.up) * directionMarker2base_footprint;
+                RobotOrigin.transform.position = base_footprint.position - RobotOrigin.transform.rotation * robotCurrentPosition;
+                base_footprint.forward = caller.transform.forward;  // Has to be in the end, because it changes caller.transform
                 isCalibrated = true;
-                // If selected again after calibration, it will be reset to default. Is this desired?
+
                 Debug.Log("Direction marker selected.");
                 VisualizeOrigin();
                 VisualizeCentre();
@@ -222,7 +234,7 @@ namespace HumanRobotInterface
                     // Calculate origin of robot odometry in the unity world frame
                     Vector3 origin = centre - RobotOrigin.transform.rotation * calibrationElements[i].robotPosition;
 
-                    // Set y coordinate of origin to the default value (calculated from the measurements base on the directionMarker's height above the floor)
+                    // Set y coordinate of origin to the value obtained from the directionMarker (directionMarker's height above base_footprint)
                     origin.y = RobotOrigin.transform.position.y;
 
                     // Add origin and offset to list
@@ -246,6 +258,8 @@ namespace HumanRobotInterface
             {
                 RobotOrigin.transform.position = meanOrigin;
                 markerOffset = meanOffset;
+                base_footprint.position = robotCurrentPosition.Robot2UnityPose(RobotOrigin.transform);
+                base_footprint.rotation = robotCurrentRotation.Robot2UnityTwist(RobotOrigin.transform);
                 isCalibrated = true;
             }
             else
@@ -296,19 +310,17 @@ namespace HumanRobotInterface
         {
             if (isCalibrated)
             {
-                if (trajectoryVisualization)
+                if (footprintVisualization)
                 {
                     Debug.Log("Show rotation centre");
-                    trajectoryVisualization.SetActive(true);
-                    trajectoryVisualization.transform.position = robotCurrentPosition.Robot2UnityFrame(RobotOrigin.transform);
-                    trajectoryVisualization.transform.rotation = robotCurrentRotation.Robot2UnityFrame(RobotOrigin.transform);
-                    Vector3 trajectoryScale = new Vector3(2 * markerOffset, trajectoryVisualization.transform.GetChild(0).localScale.y, 2 * markerOffset);
-                    trajectoryVisualization.transform.GetChild(0).localScale = trajectoryScale;
+                    footprintVisualization.SetActive(true);
+                    Vector3 trajectoryScale = new Vector3(2 * markerOffset, footprintVisualization.transform.GetChild(0).localScale.y, 2 * markerOffset);
+                    footprintVisualization.transform.GetChild(0).localScale = trajectoryScale;
                 }
             }
             else
             {
-                trajectoryVisualization.SetActive(false);
+                footprintVisualization.SetActive(false);
             }
         }
 

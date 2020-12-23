@@ -7,18 +7,17 @@ using nav_msgs = RosSharp.RosBridgeClient.MessageTypes.Nav;
 
 namespace HumanRobotInterface
 {
-    public class MarkerController : Subscriber<nav_msgs.Odometry>
+    public class BaseController : Subscriber<nav_msgs.Odometry>
     {
-        private Vector3 robotInitialPosition;
-        private Quaternion robotInitialRotation;
+        [SerializeField]
+        private MarkerCalibration calibrationMarker;
+
         private Vector3 robotCurrentPosition;
         private Quaternion robotCurrentRotation;
-        private Vector3 markerInitialPosition;
-        private Quaternion markerInitialRotation;
         private Vector3 robotOriginPosition;
         private Quaternion robotOriginRotation;
-        private Vector3 markerOffset;
         private bool isInitialized;
+
 
         // Start is called before the first frame update
         protected override void Start()
@@ -29,8 +28,7 @@ namespace HumanRobotInterface
         void OnEnable()
         {
             isInitialized = false;  // Must be placed here instead of in OnDisable, otherwise callback function will change the value again
-            markerInitialPosition = gameObject.transform.position;
-            markerInitialRotation = gameObject.transform.rotation;
+
             // Bug in callback? Access to RobotOrigin.transform (in callback) throws error
             robotOriginPosition = GameObject.Find("RobotOrigin").transform.position;
             robotOriginRotation = GameObject.Find("RobotOrigin").transform.rotation;
@@ -39,22 +37,19 @@ namespace HumanRobotInterface
         // Update is called once per frame
         void Update()
         {
-            if (isInitialized)
+            if (isInitialized && calibrationMarker.isCalibrated)
                 ProcessMessage();
         }
 
         protected override void callback(nav_msgs.Odometry message)
         {
             robotCurrentPosition = Conversions.NavMsgsOdomPositionToVec3(message).Ros2Unity();
-            robotCurrentPosition = robotCurrentPosition.Robot2UnityFrame(robotOriginPosition, robotOriginRotation);
+            robotCurrentPosition = robotCurrentPosition.Robot2UnityPose(robotOriginPosition, robotOriginRotation);
             robotCurrentRotation = Conversions.NavMsgsOdomOrientationToQuaternion(message).Ros2Unity();
-            robotCurrentRotation = robotCurrentRotation.Robot2UnityFrame(robotOriginRotation);
+            robotCurrentRotation = robotCurrentRotation.Robot2UnityTwist(robotOriginRotation);
 
             if (!isInitialized)
             {
-                robotInitialPosition = robotCurrentPosition;
-                robotInitialRotation = robotCurrentRotation;
-                markerOffset = markerInitialPosition - robotInitialPosition;
                 isInitialized = true;
                 Debug.Log("Bridge: Initialized.");
             }
@@ -62,17 +57,8 @@ namespace HumanRobotInterface
 
         private void ProcessMessage()
         {
-            //Rotation
-            Quaternion diff = robotCurrentRotation * Quaternion.Inverse(robotInitialRotation);  // diff * q1 = q2  -->  diff = q2 * Inverse(q1)
-            gameObject.transform.rotation = diff * markerInitialRotation;
-
-            // Position
-            gameObject.transform.position = diff * markerOffset + robotCurrentPosition;
-
-            // Alternativ:
-            //gameObject.transform.position = markerInitialPosition + robotCurrentPosition - robotInitialPosition;
-            //float theta = Quaternion.Angle(robotInitialRotation, robotCurrentRotation) * Mathf.Deg2Rad;
-            //gameObject.transform.RotateAround(robotCurrentPosition, Vector3.up, theta);
+            gameObject.transform.position = robotCurrentPosition;
+            gameObject.transform.rotation = robotCurrentRotation;
         }
     }
 }

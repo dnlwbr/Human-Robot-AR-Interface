@@ -10,11 +10,14 @@ using tf2_msgs = RosSharp.RosBridgeClient.MessageTypes.Tf2.TFMessage;
 namespace HumanRobotInterface
 {
     /// <summary>
-    /// Publishes transformation from the origin in Unity's world coordinate system to
+    /// Publishes transformation from the base_link frame of the robot to
     /// the Azure Kinect's camera_base frame.
     /// </summary>
-    public class UnityOrigin2KinectTFPublisher : Publisher<tf2_msgs>
+    public class BaseLink2KinectTFPublisher : Publisher<tf2_msgs>
     {
+        [SerializeField]
+        private MarkerCalibration calibrationMarker;
+
         private int rate = 10; // in hz
         private tf2_msgs transformMsg;
         private geometry_msgs.TransformStamped transformStamped;
@@ -28,13 +31,13 @@ namespace HumanRobotInterface
             base.Start();
             transformMsg = new tf2_msgs();
             transformStamped = new geometry_msgs.TransformStamped();
-            transformStamped.header.frame_id = "unity_origin";
+            transformStamped.header.frame_id = "base_link";
             transformStamped.child_frame_id = "camera_base";
         }
 
         void FixedUpdate()
         {
-            if (gameObject.transform.root.GetComponent<MarkerCalibration>().isCalibrated)
+            if (calibrationMarker.isCalibrated)
             {
                 PublishTransformation();
             }
@@ -42,10 +45,13 @@ namespace HumanRobotInterface
 
         private void PublishTransformation()
         {
-            translation = gameObject.transform.position;
+            // World position to local position
+            translation = gameObject.transform.root.InverseTransformPoint(gameObject.transform.position);
+            translation -= new Vector3(0, 0.021f, 0);   // Start at base_footprint -> Start at base_link
             transformStamped.transform.translation = Conversions.Vec3ToGeoMsgsVec3(translation.Unity2Ros());
 
-            rotation = gameObject.transform.rotation;
+            // World rotation to local rotation
+            rotation = Quaternion.Inverse(gameObject.transform.root.rotation) * gameObject.transform.rotation;
             transformStamped.transform.rotation = Conversions.QuaternionToGeoMsgsQuaternion(rotation.Unity2Ros());
 
             transformMsg.transforms = new geometry_msgs.TransformStamped[] { transformStamped };

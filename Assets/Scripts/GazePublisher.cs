@@ -14,6 +14,9 @@ namespace HumanRobotInterface
     /// </summary>
     public class GazePublisher : MonoBehaviour
     {
+        [SerializeField]
+        private MarkerCalibration calibrationMarker;
+
         private GameObject RosSharp;
         private RosSocket rosSocket;
         private string publicationIdPose;
@@ -41,7 +44,7 @@ namespace HumanRobotInterface
         // Update is called once per frame
         void Update()
         {
-            if (CoreServices.InputSystem.EyeGazeProvider.IsEyeTrackingEnabledAndValid && gameObject.transform.root.GetComponent<MarkerCalibration>().isCalibrated)
+            if (CoreServices.InputSystem.EyeGazeProvider.IsEyeTrackingEnabledAndValid && calibrationMarker.isCalibrated)
             {
                 PublishGazeDirectionOrigin();
                 PublishGazeHitPoint();

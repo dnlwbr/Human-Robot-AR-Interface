@@ -17,6 +17,7 @@ namespace HumanRobotInterface
     {
         [SerializeField]
         private MarkerCalibration calibrationMarker;
+
         private int rate = 10; // in hz
         private tf2_msgs transformMsg;
         private geometry_msgs.TransformStamped transformStamped;

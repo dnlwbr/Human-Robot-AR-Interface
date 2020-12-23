@@ -15,6 +15,9 @@ namespace HumanRobotInterface
     /// </summary>
     public class Kinect2KinectLeveledTFPublisher : Publisher<tf2_msgs>
     {
+        [SerializeField]
+        private MarkerCalibration calibrationMarker;
+
         private int rate = 10; // in hz
         private tf2_msgs transformMsg;
         private geometry_msgs.TransformStamped transformStamped;
@@ -33,7 +36,7 @@ namespace HumanRobotInterface
 
         void FixedUpdate()
         {
-            if (gameObject.transform.root.GetComponent<MarkerCalibration>().isCalibrated)
+            if (calibrationMarker.isCalibrated)
             {
                 PublishTransformation();
             }

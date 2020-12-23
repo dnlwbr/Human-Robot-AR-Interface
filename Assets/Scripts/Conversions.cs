@@ -29,42 +29,42 @@ namespace HumanRobotInterface
             return new Quaternion(-quaternion.x, quaternion.y, -quaternion.z, quaternion.w);
         }
 
-        public static Vector3 Robot2UnityFrame(this Vector3 vector, Transform robotOrigin)
+        public static Vector3 Robot2UnityPose(this Vector3 vector, Transform robotOrigin)
         {
             return robotOrigin.rotation * vector + robotOrigin.transform.position;
         }
 
-        public static Vector3 Robot2UnityFrame(this Vector3 vector, Vector3 robotOriginPosition, Quaternion robotOriginRotation)
+        public static Vector3 Robot2UnityPose(this Vector3 vector, Vector3 robotOriginPosition, Quaternion robotOriginRotation)
         {
             return robotOriginRotation * vector + robotOriginPosition;
         }
 
-        public static Quaternion Robot2UnityFrame(this Quaternion quaternion, Transform robotOrigin)
+        public static Quaternion Robot2UnityTwist(this Quaternion quaternion, Transform robotOrigin)
         {
             return robotOrigin.transform.rotation * quaternion;
         }
 
-        public static Quaternion Robot2UnityFrame(this Quaternion quaternion, Quaternion robotOriginRotation)
+        public static Quaternion Robot2UnityTwist(this Quaternion quaternion, Quaternion robotOriginRotation)
         {
             return robotOriginRotation * quaternion;
         }
 
-        public static Vector3 Unity2RobotFrame(this Vector3 vector, Transform robotOrigin)
+        public static Vector3 Unity2RobotPose(this Vector3 vector, Transform robotOrigin)
         {
             return Quaternion.Inverse(robotOrigin.rotation) * (vector - robotOrigin.position);
         }
 
-        public static Vector3 Unity2RobotFrame(this Vector3 vector, Vector3 robotOriginPosition, Quaternion robotOriginRotation)
+        public static Vector3 Unity2RobotPose(this Vector3 vector, Vector3 robotOriginPosition, Quaternion robotOriginRotation)
         {
             return Quaternion.Inverse(robotOriginRotation) * (vector - robotOriginPosition);
         }
 
-        public static Quaternion Unity2RobotFrame(this Quaternion quaternion, Transform robotOrigin)
+        public static Quaternion Unity2RobotTwist(this Quaternion quaternion, Transform robotOrigin)
         {
             return Quaternion.Inverse(robotOrigin.rotation) * quaternion;
         }
 
-        public static Quaternion Unity2RobotFrame(this Quaternion quaternion, Quaternion robotOriginRotation)
+        public static Quaternion Unity2RobotTwist(this Quaternion quaternion, Quaternion robotOriginRotation)
         {
             return Quaternion.Inverse(robotOriginRotation) * quaternion;
         }
