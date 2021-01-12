@@ -129,7 +129,7 @@ namespace HumanRobotInterface
                 directionMarker2base_footprint += new Vector3(0, -0.004f, 0); // --> mounting of spine (4mm thick)
                 //directionMarker2base_footprint += new Vector3(0, -0.0021f, 0); // --> mid of torso plate (torso plate is 4.2mm thick)
                 //directionMarker2base_footprint += new Vector3(0, -0.589f, 0.085f); // --> base_footprint (Inaccurate: torso_plate to base_footprint tf matches urdf model but not the real robot)
-                directionMarker2base_footprint += new Vector3(0, -0.586f, 0.085f); // --> base_footprint
+                directionMarker2base_footprint += new Vector3(0, -0.586f, 0.075f); // --> base_footprint  (measured + head_base_frame used for forward direction)
                 base_footprint.position = caller.transform.position + Quaternion.LookRotation(directionMarkerForward, Vector3.up) * directionMarker2base_footprint;
                 RobotOrigin.transform.position = base_footprint.position - RobotOrigin.transform.rotation * robotCurrentPosition;
                 base_footprint.rotation = Quaternion.LookRotation(directionMarkerForward, Vector3.up);  // Has to be in the end, because it changes caller.transform
