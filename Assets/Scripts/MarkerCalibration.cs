@@ -194,7 +194,8 @@ namespace HumanRobotInterface
                 //float theta = Quaternion.Angle(robotInitialRotation, robotTargetRotation) * Mathf.Deg2Rad; // unsigned
                 float robotRotationAngle = Mathf.DeltaAngle(angleInitial, angleTarget);  // signed
 
-                if (Mathf.Abs(robotRotationAngle) >= 10)  // check whether robot has moved less than 1cm in one direction
+                // check whether positions are too similar or opposite to each other
+                if (15 <= Mathf.Abs(robotRotationAngle)  && Mathf.Abs(robotRotationAngle) <= 165)
                 {
                     //Where:
                     // - p0 = Initial marker position
