@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using geometry_msgs = RosSharp.RosBridgeClient.MessageTypes.Geometry;
 using tf2_msgs = RosSharp.RosBridgeClient.MessageTypes.Tf2.TFMessage;
+using std_msgs = RosSharp.RosBridgeClient.MessageTypes.Std;
 
 
 namespace HumanRobotInterface
@@ -22,6 +23,8 @@ namespace HumanRobotInterface
         private tf2_msgs transformMsg;
         private geometry_msgs.TransformStamped transformStamped;
         private Quaternion rotation;
+
+        private std_msgs.Time previousStamp = new std_msgs.Time();
 
 
         // Start is called before the first frame update
@@ -56,9 +59,17 @@ namespace HumanRobotInterface
             rotation = Quaternion.FromToRotation(Vector3.up, Quaternion.Inverse(transform.rotation) * Vector3.up);
             transformStamped.transform.rotation = Conversions.QuaternionToGeoMsgsQuaternion(rotation.Unity2Ros());
 
-            transformMsg.transforms = new geometry_msgs.TransformStamped[] { transformStamped };
             transformStamped.header.Update();
-            Publish(transformMsg, rate);
+            transformMsg.transforms = new geometry_msgs.TransformStamped[] { transformStamped };
+
+            // Publish if stamp has changed
+            if ((transformStamped.header.stamp.secs != previousStamp.secs) ||
+                (transformStamped.header.stamp.nsecs != previousStamp.nsecs))
+            {
+                Publish(transformMsg, rate);
+                previousStamp.secs = transformStamped.header.stamp.secs;
+                previousStamp.nsecs = transformStamped.header.stamp.nsecs;
+            }
         }
     }
 }
