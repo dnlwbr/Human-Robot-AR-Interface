@@ -29,12 +29,12 @@ namespace HumanRobotInterface
             return new Quaternion(-quaternion.x, quaternion.y, -quaternion.z, quaternion.w);
         }
 
-        public static Vector3 Robot2UnityPose(this Vector3 vector, Transform robotOrigin)
+        public static Vector3 Robot2UnityPosition(this Vector3 vector, Transform robotOrigin)
         {
             return robotOrigin.rotation * vector + robotOrigin.transform.position;
         }
 
-        public static Vector3 Robot2UnityPose(this Vector3 vector, Vector3 robotOriginPosition, Quaternion robotOriginRotation)
+        public static Vector3 Robot2UnityPosition(this Vector3 vector, Vector3 robotOriginPosition, Quaternion robotOriginRotation)
         {
             return robotOriginRotation * vector + robotOriginPosition;
         }
@@ -49,12 +49,12 @@ namespace HumanRobotInterface
             return robotOriginRotation * quaternion;
         }
 
-        public static Vector3 Unity2RobotPose(this Vector3 vector, Transform robotOrigin)
+        public static Vector3 Unity2RobotPosition(this Vector3 vector, Transform robotOrigin)
         {
             return Quaternion.Inverse(robotOrigin.rotation) * (vector - robotOrigin.position);
         }
 
-        public static Vector3 Unity2RobotPose(this Vector3 vector, Vector3 robotOriginPosition, Quaternion robotOriginRotation)
+        public static Vector3 Unity2RobotPosition(this Vector3 vector, Vector3 robotOriginPosition, Quaternion robotOriginRotation)
         {
             return Quaternion.Inverse(robotOriginRotation) * (vector - robotOriginPosition);
         }

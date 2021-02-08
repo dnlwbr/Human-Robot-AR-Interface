@@ -44,7 +44,7 @@ namespace HumanRobotInterface
         protected override void callback(nav_msgs.Odometry message)
         {
             robotCurrentPosition = Conversions.NavMsgsOdomPositionToVec3(message).Ros2Unity();
-            robotCurrentPosition = robotCurrentPosition.Robot2UnityPose(robotOriginPosition, robotOriginRotation);
+            robotCurrentPosition = robotCurrentPosition.Robot2UnityPosition(robotOriginPosition, robotOriginRotation);
             robotCurrentRotation = Conversions.NavMsgsOdomOrientationToQuaternion(message).Ros2Unity();
             robotCurrentRotation = robotCurrentRotation.Robot2UnityTwist(robotOriginRotation);
 

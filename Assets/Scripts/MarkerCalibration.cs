@@ -262,7 +262,7 @@ namespace HumanRobotInterface
             {
                 RobotOrigin.transform.position = meanOrigin;
                 markerOffset = meanOffset;
-                base_footprint.position = robotCurrentPosition.Robot2UnityPose(RobotOrigin.transform);
+                base_footprint.position = robotCurrentPosition.Robot2UnityPosition(RobotOrigin.transform);
                 base_footprint.rotation = robotCurrentRotation.Robot2UnityTwist(RobotOrigin.transform);
                 isCalibrated = true;
             }
