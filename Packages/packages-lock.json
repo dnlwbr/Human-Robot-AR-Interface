@@ -1,32 +1,32 @@
 {
   "dependencies": {
     "com.microsoft.mixedreality.toolkit.examples": {
-      "version": "file:MixedReality/com.microsoft.mixedreality.toolkit.examples-2.5.1.tgz",
+      "version": "file:MixedReality/com.microsoft.mixedreality.toolkit.examples-2.5.4.tgz",
       "depth": 0,
       "source": "local-tarball",
       "dependencies": {
-        "com.microsoft.mixedreality.toolkit.foundation": "2.5.1",
-        "com.microsoft.mixedreality.toolkit.extensions": "2.5.1"
+        "com.microsoft.mixedreality.toolkit.foundation": "2.5.4",
+        "com.microsoft.mixedreality.toolkit.extensions": "2.5.4"
       }
     },
     "com.microsoft.mixedreality.toolkit.extensions": {
-      "version": "file:MixedReality/com.microsoft.mixedreality.toolkit.extensions-2.5.1.tgz",
+      "version": "file:MixedReality/com.microsoft.mixedreality.toolkit.extensions-2.5.4.tgz",
       "depth": 0,
       "source": "local-tarball",
       "dependencies": {
-        "com.microsoft.mixedreality.toolkit.foundation": "2.5.1"
+        "com.microsoft.mixedreality.toolkit.foundation": "2.5.4"
       }
     },
     "com.microsoft.mixedreality.toolkit.foundation": {
-      "version": "file:MixedReality/com.microsoft.mixedreality.toolkit.foundation-2.5.1.tgz",
+      "version": "file:MixedReality/com.microsoft.mixedreality.toolkit.foundation-2.5.4.tgz",
       "depth": 0,
       "source": "local-tarball",
       "dependencies": {
-        "com.microsoft.mixedreality.toolkit.standardassets": "2.5.1"
+        "com.microsoft.mixedreality.toolkit.standardassets": "2.5.4"
       }
     },
     "com.microsoft.mixedreality.toolkit.standardassets": {
-      "version": "file:MixedReality/com.microsoft.mixedreality.toolkit.standardassets-2.5.1.tgz",
+      "version": "file:MixedReality/com.microsoft.mixedreality.toolkit.standardassets-2.5.4.tgz",
       "depth": 0,
       "source": "local-tarball",
       "dependencies": {
@@ -34,11 +34,11 @@
       }
     },
     "com.microsoft.mixedreality.toolkit.tools": {
-      "version": "file:MixedReality/com.microsoft.mixedreality.toolkit.tools-2.5.1.tgz",
+      "version": "file:MixedReality/com.microsoft.mixedreality.toolkit.tools-2.5.4.tgz",
       "depth": 0,
       "source": "local-tarball",
       "dependencies": {
-        "com.microsoft.mixedreality.toolkit.foundation": "2.5.1"
+        "com.microsoft.mixedreality.toolkit.foundation": "2.5.4"
       }
     },
     "com.unity.2d.sprite": {
