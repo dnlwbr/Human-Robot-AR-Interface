@@ -30,7 +30,7 @@ namespace HumanRobotInterface
             {
                 keyboardText = keyboard.text;
 
-                if (keyboard.done == true)
+                if (keyboard.status == TouchScreenKeyboard.Status.Done)
                 {
                     RosSharp.GetComponent<RosConnector>().RosSocket.Close();
                     RosSharp.GetComponent<RosConnector>().RosBridgeServerUrl = keyboardText;
