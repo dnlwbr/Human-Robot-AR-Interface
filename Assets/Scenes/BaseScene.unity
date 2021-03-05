@@ -11901,7 +11901,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   topic: /rgb/image_raw/compressed
-  timeStep: 40
+  timeStep: 20
   queueLength: 1
   meshRenderer: {fileID: 3348377780357932456}
 --- !u!114 &1916591963793313226
