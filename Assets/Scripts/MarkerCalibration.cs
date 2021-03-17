@@ -13,6 +13,7 @@ namespace HumanRobotInterface
     public class MarkerCalibration : Subscriber<nav_msgs.Odometry>
     {
         public bool isCalibrated { get; private set; } = false;
+        public Pose base_footprint2Kinect { get; private set; }
 
         [SerializeField]
         [Tooltip("Gameobject that visualizes the origin of the robot's odometry.")]
@@ -133,6 +134,7 @@ namespace HumanRobotInterface
                 base_footprint.position = caller.transform.position + Quaternion.LookRotation(directionMarkerForward, Vector3.up) * directionMarker2base_footprint;
                 RobotOrigin.transform.position = base_footprint.position - RobotOrigin.transform.rotation * robotCurrentPosition;
                 base_footprint.rotation = Quaternion.LookRotation(directionMarkerForward, Vector3.up);  // Has to be in the end, because it changes caller.transform
+                SetTFProperty();
                 isCalibrated = true;
 
                 Debug.Log("Direction marker selected.");
@@ -264,6 +266,7 @@ namespace HumanRobotInterface
                 markerOffset = meanOffset;
                 base_footprint.position = robotCurrentPosition.Robot2UnityPosition(RobotOrigin.transform);
                 base_footprint.rotation = robotCurrentRotation.Robot2UnityTwist(RobotOrigin.transform);
+                SetTFProperty();
                 isCalibrated = true;
             }
             else
@@ -339,6 +342,14 @@ namespace HumanRobotInterface
             {
                 RobotOrigin.transform.Find("Visuals").gameObject.SetActive(false);
             }
+        }
+
+        private void SetTFProperty()
+        {
+            Transform camera_base = gameObject.transform.Find("Visuals").Find("Depth");
+            base_footprint2Kinect = new Pose(
+                base_footprint.InverseTransformPoint(camera_base.position),
+                Quaternion.Inverse(base_footprint.rotation) * camera_base.rotation);
         }
     }
 }

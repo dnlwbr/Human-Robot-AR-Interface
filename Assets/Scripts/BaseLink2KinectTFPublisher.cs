@@ -49,12 +49,11 @@ namespace HumanRobotInterface
         private void PublishTransformation()
         {
             // World position to local position
-            translation = gameObject.transform.root.InverseTransformPoint(gameObject.transform.position);
-            translation -= new Vector3(0, 0.021f, 0);   // Start at base_footprint -> Start at base_link
+            translation = calibrationMarker.base_footprint2Kinect.position - new Vector3(0, 0.021f, 0);   // Start at base_footprint -> Start at base_link
             transformStamped.transform.translation = Conversions.Vec3ToGeoMsgsVec3(translation.Unity2Ros());
 
             // World rotation to local rotation
-            rotation = Quaternion.Inverse(gameObject.transform.root.rotation) * gameObject.transform.rotation;
+            rotation = calibrationMarker.base_footprint2Kinect.rotation;
             transformStamped.transform.rotation = Conversions.QuaternionToGeoMsgsQuaternion(rotation.Unity2Ros());
 
             transformStamped.header.Update();
