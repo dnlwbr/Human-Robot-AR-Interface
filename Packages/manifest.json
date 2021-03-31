@@ -15,7 +15,6 @@
     "com.microsoft.mixedreality.toolkit.standardassets": "file:MixedReality/com.microsoft.mixedreality.toolkit.standardassets-2.6.1.tgz",
     "com.microsoft.mixedreality.toolkit.tools": "file:MixedReality/com.microsoft.mixedreality.toolkit.tools-2.6.1.tgz",
     "com.microsoft.mixedreality.toolkit.planefinding": "file:MixedReality/com.microsoft.mixedreality.toolkit.planefinding-1.0.0.tgz",
-    "com.microsoft.mixedreality.sceneunderstanding": "file:MixedReality/com.microsoft.mixedreality.sceneunderstanding-0.6.0.tgz",
     "com.microsoft.spatialaudio.spatializer.unity": "file:MixedReality/com.microsoft.spatialaudio.spatializer.unity-1.0.176.tgz",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.2d.tilemap": "1.0.0",
