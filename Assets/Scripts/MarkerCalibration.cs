@@ -30,6 +30,7 @@ namespace HumanRobotInterface
         private float markerOffset; // Distance from rotation centre to depth sensor
         private bool isInitialized;
         private bool isOriented;
+        private bool isRobotPoseCalibrated;
 
         private float lastClickTime = 0;
         private float debounceDelay = 0.005f;
@@ -73,12 +74,15 @@ namespace HumanRobotInterface
             }
             calibrationElements.Clear();
 
-            if (!isCalibrated)
+            if (!isRobotPoseCalibrated)
             {
                 gameObject.SetActive(false);
+                isCalibrated = false;
             }
             else
             {
+                SetTFProperty();
+
                 Vector3 directionMarker2base_footprint = -GameObject.Find("CalibrationMarkerDirection").transform.localPosition;
                 Debug.Log(
                     "#######################################################" + System.Environment.NewLine +
@@ -134,8 +138,7 @@ namespace HumanRobotInterface
                 base_footprint.position = caller.transform.position + Quaternion.LookRotation(directionMarkerForward, Vector3.up) * directionMarker2base_footprint;
                 RobotOrigin.transform.position = base_footprint.position - RobotOrigin.transform.rotation * robotCurrentPosition;
                 base_footprint.rotation = Quaternion.LookRotation(directionMarkerForward, Vector3.up);  // Has to be in the end, because it changes caller.transform
-                SetTFProperty();
-                isCalibrated = true;
+                isRobotPoseCalibrated = true;
 
                 Debug.Log("Direction marker selected.");
                 VisualizeOrigin();
@@ -266,12 +269,11 @@ namespace HumanRobotInterface
                 markerOffset = meanOffset;
                 base_footprint.position = robotCurrentPosition.Robot2UnityPosition(RobotOrigin.transform);
                 base_footprint.rotation = robotCurrentRotation.Robot2UnityTwist(RobotOrigin.transform);
-                SetTFProperty();
-                isCalibrated = true;
+                isRobotPoseCalibrated = true;
             }
             else
             {
-                isCalibrated = false;
+                isRobotPoseCalibrated = false;
             }
         }
 
@@ -315,7 +317,7 @@ namespace HumanRobotInterface
 
         private void VisualizeCentre()
         {
-            if (isCalibrated)
+            if (isRobotPoseCalibrated)
             {
                 if (footprintVisualization)
                 {
@@ -333,7 +335,7 @@ namespace HumanRobotInterface
 
         private void VisualizeOrigin()
         {
-            if (isCalibrated)
+            if (isRobotPoseCalibrated)
             {
                 Debug.Log("Show origin of robot's odometry");
                 RobotOrigin.transform.Find("Visuals").gameObject.SetActive(true);
@@ -346,10 +348,18 @@ namespace HumanRobotInterface
 
         private void SetTFProperty()
         {
-            Transform camera_base = gameObject.transform.Find("Visuals").Find("Depth");
-            base_footprint2Kinect = new Pose(
-                base_footprint.InverseTransformPoint(camera_base.position),
-                Quaternion.Inverse(base_footprint.rotation) * camera_base.rotation);
+            if (isRobotPoseCalibrated)
+            {
+                Transform camera_base = gameObject.transform.Find("Visuals").Find("Depth");
+                base_footprint2Kinect = new Pose(
+                    base_footprint.InverseTransformPoint(camera_base.position),
+                    Quaternion.Inverse(base_footprint.rotation) * camera_base.rotation);
+                isCalibrated = true;
+            }
+            else
+            {
+                isCalibrated = false;
+            }
         }
     }
 }
