@@ -33,8 +33,8 @@ namespace HumanRobotInterface
             base.Start();
             transformMsg = new tf2_msgs();
             transformStamped = new geometry_msgs.TransformStamped();
-            transformStamped.header.frame_id = "camera_base";
-            transformStamped.child_frame_id = "camera_base_leveled";
+            transformStamped.header.frame_id = "azure_kinect_camera_base";
+            transformStamped.child_frame_id = "azure_kinect_camera_base_leveled";
         }
 
         void FixedUpdate()

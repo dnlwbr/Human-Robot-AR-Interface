@@ -4498,7 +4498,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 429bb693c61a93149949a8a028179e33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topic: /points2/bounding_box_3d
+  topic: /segmented/bounding_box_3d
   timeStep: 0
   queueLength: 1
   referenceFrame: {fileID: 43579319}
@@ -11919,7 +11919,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc18ca5bb6a8b024aa838047c84e7982, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topic: /rgb/image_raw/compressed
+  topic: /azure_kinect/rgb/image_raw/compressed
   timeStep: 20
   queueLength: 1
   meshRenderer: {fileID: 3348377780357932456}

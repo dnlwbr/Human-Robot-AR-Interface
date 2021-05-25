@@ -14,7 +14,7 @@ namespace HumanRobotInterface
     /// Publishes the transformation from the origin in Unity's world coordinate system to
     /// the origin in the odometry frame of the robot.
     /// </summary>
-    public class UnityOrigin2OdomTFPublisher : Publisher<tf2_msgs>
+    public class UnityWorld2OdomTFPublisher : Publisher<tf2_msgs>
     {
         [SerializeField]
         private MarkerCalibration calibrationMarker;
@@ -34,7 +34,7 @@ namespace HumanRobotInterface
             base.Start();
             transformMsg = new tf2_msgs();
             transformStamped = new geometry_msgs.TransformStamped();
-            transformStamped.header.frame_id = "unity_origin";
+            transformStamped.header.frame_id = "unity_world";
             transformStamped.child_frame_id = "odom";
         }
 

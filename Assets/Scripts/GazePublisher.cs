@@ -50,10 +50,10 @@ namespace HumanRobotInterface
             GazeRGB = new geometry_msgs.PoseStamped();
             HitPoint = new geometry_msgs.PointStamped();
             HitPointRGB = new geometry_msgs.PointStamped();
-            Gaze.header.frame_id = "unity_origin";
-            HitPoint.header.frame_id = "unity_origin";
-            GazeRGB.header.frame_id = "rgb_camera_link";
-            HitPointRGB.header.frame_id = "rgb_camera_link";
+            Gaze.header.frame_id = "unity_world";
+            HitPoint.header.frame_id = "unity_world";
+            GazeRGB.header.frame_id = "azure_kinect_rgb_camera_link";
+            HitPointRGB.header.frame_id = "azure_kinect_rgb_camera_link";
         }
 
         // Update is called once per frame
