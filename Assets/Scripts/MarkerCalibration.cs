@@ -124,20 +124,20 @@ namespace HumanRobotInterface
             {
                 Vector3 directionMarkerForward = Vector3.ProjectOnPlane(caller.transform.forward, Vector3.up);
 
-                RobotOrigin.transform.rotation = Quaternion.Inverse(robotCurrentRotation) * Quaternion.LookRotation(directionMarkerForward, Vector3.up);
+                RobotOrigin.transform.rotation = Quaternion.Inverse(robotCurrentRotation) * Quaternion.LookRotation(-directionMarkerForward, Vector3.up);
                 isOriented = true;
 
-                Vector3 directionMarker2base_footprint = new Vector3(-0.0362f, 0, 0); // --> mid of marker
-                directionMarker2base_footprint += new Vector3(0, 0, -caller.GetComponent<QRCodeTarget>().boardThickness/1000); // --> back of marker
+                Vector3 directionMarker2base_footprint = new Vector3(0.0362f, 0, 0); // --> mid of marker
+                directionMarker2base_footprint += new Vector3(0, 0, caller.GetComponent<QRCodeTarget>().boardThickness/1000); // --> back of marker
                 directionMarker2base_footprint += new Vector3(0, -0.0862f, 0); // --> bottom of marker
-                directionMarker2base_footprint += new Vector3(0, 0, -0.04f); // --> spine (spine is 8x8cm)
+                directionMarker2base_footprint += new Vector3(0, 0, 0.04f); // --> spine (spine is 8x8cm)
                 directionMarker2base_footprint += new Vector3(0, -0.004f, 0); // --> mounting of spine (4mm thick)
                 //directionMarker2base_footprint += new Vector3(0, -0.0021f, 0); // --> mid of torso plate (torso plate is 4.2mm thick)
                 //directionMarker2base_footprint += new Vector3(0, -0.589f, 0.085f); // --> base_footprint (Inaccurate: torso_plate to base_footprint tf matches urdf model but not the real robot)
                 directionMarker2base_footprint += new Vector3(0, -0.586f, 0.075f); // --> base_footprint  (measured + head_base_frame used for forward direction)
-                base_footprint.position = caller.transform.position + Quaternion.LookRotation(directionMarkerForward, Vector3.up) * directionMarker2base_footprint;
+                base_footprint.position = caller.transform.position + Quaternion.LookRotation(-directionMarkerForward, Vector3.up) * directionMarker2base_footprint;
                 RobotOrigin.transform.position = base_footprint.position - RobotOrigin.transform.rotation * robotCurrentPosition;
-                base_footprint.rotation = Quaternion.LookRotation(directionMarkerForward, Vector3.up);  // Has to be in the end, because it changes caller.transform
+                base_footprint.rotation = Quaternion.LookRotation(-directionMarkerForward, Vector3.up);  // Has to be in the end, because it changes caller.transform
                 isRobotPoseCalibrated = true;
 
                 Debug.Log("Direction marker selected.");
