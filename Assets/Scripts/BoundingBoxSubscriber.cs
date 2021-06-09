@@ -30,7 +30,7 @@ namespace HumanRobotInterface
         // Update is called once per frame
         void Update()
         {
-            if (isMessageReceived)
+            if (isMessageReceived && isValid(detectionMsg.bbox))
                 ProcessMessage();
         }
 
@@ -44,7 +44,7 @@ namespace HumanRobotInterface
         {
             // Activate if "Activate Manually" has been selected
             //boundsControl.Active = true;
-            
+
             Vector3 position = new Vector3((float)detectionMsg.bbox.center.position.x,
                                            (float)detectionMsg.bbox.center.position.y,
                                            (float)detectionMsg.bbox.center.position.z).Kinect2Unity();
@@ -63,6 +63,27 @@ namespace HumanRobotInterface
                 gameObject.transform.localScale = scale;
             }
             isMessageReceived = false;
+        }
+
+        private bool isValid(vision_msgs.BoundingBox3D bbox)
+        {
+            if (double.IsNaN(bbox.center.position.x) || double.IsInfinity(bbox.center.position.x) ||
+                double.IsNaN(bbox.center.position.y) || double.IsInfinity(bbox.center.position.y) ||
+                double.IsNaN(bbox.center.position.z) || double.IsInfinity(bbox.center.position.z) ||
+                double.IsNaN(bbox.center.orientation.x) || double.IsInfinity(bbox.center.orientation.x) ||
+                double.IsNaN(bbox.center.orientation.y) || double.IsInfinity(bbox.center.orientation.y) ||
+                double.IsNaN(bbox.center.orientation.z) || double.IsInfinity(bbox.center.orientation.z) ||
+                double.IsNaN(bbox.center.orientation.w) || double.IsInfinity(bbox.center.orientation.w) ||
+                double.IsNaN(bbox.size.x) || double.IsInfinity(bbox.size.x) ||
+                double.IsNaN(bbox.size.y) || double.IsInfinity(bbox.size.y) ||
+                double.IsNaN(bbox.size.z) || double.IsInfinity(bbox.size.z))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
     }
 }
