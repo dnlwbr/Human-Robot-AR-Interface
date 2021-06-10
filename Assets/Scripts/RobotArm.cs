@@ -29,6 +29,7 @@ namespace HumanRobotInterface
 
         public void StartRecord()
         {
+            gameObject.GetComponent<BoundingBoxSubscriber>().enabled = false;
             FillMsg();
             rosSocket.CallService<hri_msgs.RecordRequest, hri_msgs.RecordResponse>("/hri_robot_arm/Record", ServiceCallHandler, requestMsg);
         }
@@ -36,6 +37,7 @@ namespace HumanRobotInterface
         private void ServiceCallHandler(hri_msgs.RecordResponse response)
         {
             Debug.Log("Completed: " + response.completed);
+            gameObject.GetComponent<BoundingBoxSubscriber>().enabled = true;
         }
 
         private void FillMsg()
