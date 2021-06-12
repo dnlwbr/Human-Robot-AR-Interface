@@ -11,20 +11,21 @@
 
 namespace RosSharp.RosBridgeClient.MessageTypes.HriRobotArm
 {
-    public class RecordResponse : Message
+    public class RecordFeedback : Message
     {
-        public override string RosMessageName => "hri_robot_arm/Record";
+        public override string RosMessageName => "hri_robot_arm/RecordFeedback";
 
-        public bool completed { get; set; }
+        // feedback
+        public double progress { get; set; }
 
-        public RecordResponse()
+        public RecordFeedback()
         {
-            this.completed = false;
+            this.progress = 0.0;
         }
 
-        public RecordResponse(bool completed)
+        public RecordFeedback(double progress)
         {
-            this.completed = completed;
+            this.progress = progress;
         }
     }
 }

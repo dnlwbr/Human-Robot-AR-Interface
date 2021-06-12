@@ -1,12 +1,11 @@
 ﻿using Microsoft.MixedReality.Toolkit.UI;
 using RosSharp;
 using RosSharp.RosBridgeClient;
-using std_srvs = RosSharp.RosBridgeClient.MessageTypes.Std;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
-using std_msgs = RosSharp.RosBridgeClient.MessageTypes.Std;
-using vision_msgs = RosSharp.RosBridgeClient.MessageTypes.Vision;
+using RosSharp.RosBridgeClient.MessageTypes.Actionlib;
 using hri_msgs = RosSharp.RosBridgeClient.MessageTypes.HriRobotArm;
 
 
@@ -14,26 +13,45 @@ namespace HumanRobotInterface
 {
     public class RobotArm : MonoBehaviour
     {
-        [SerializeField]
-        private GameObject indicatorObject;
-        private IProgressIndicator indicator;
-
         private GameObject RosSharp;
         private RosSocket rosSocket;
 
-        private hri_msgs.RecordRequest requestMsg;
+        private RecordActionClient recordActionClient;
+        private hri_msgs.RecordGoal goal;
+        private string actionName = "/hri_robot_arm/Record";
 
         private float lastClickTime = 0;
         private float debounceDelay = 0.005f;
+
+        [SerializeField]
+        private GameObject indicatorObjectOrbs;
+        [SerializeField]
+        private GameObject indicatorObjectBar;
+        private IProgressIndicator indicatorOrbs;
+        private IProgressIndicator indicatorBar;
+
+        float barProgress = 0;
 
 
         // Start is called before the first frame update
         void Start()
         {
+            indicatorOrbs = indicatorObjectOrbs.GetComponent<IProgressIndicator>();
+            indicatorBar = indicatorObjectBar.GetComponent<IProgressIndicator>();
+        }
+
+        void OnEnable()
+        {
             RosSharp = GameObject.Find("RosSharp");
             rosSocket = RosSharp.GetComponent<RosConnector>().RosSocket;
-            requestMsg = new hri_msgs.RecordRequest();
-            indicator = indicatorObject.GetComponent<IProgressIndicator>();
+            recordActionClient = new RecordActionClient(actionName, rosSocket);
+            recordActionClient.Initialize();
+            goal = new hri_msgs.RecordGoal();
+        }
+
+        void OnDisable()
+        {
+            recordActionClient.Terminate();
         }
 
         public void StartRecord()
@@ -47,26 +65,20 @@ namespace HumanRobotInterface
 
             gameObject.GetComponent<BoundingBoxSubscriber>().enabled = false;
             FillMsg();
-            ToggleIndicator(indicator);
-            rosSocket.CallService<hri_msgs.RecordRequest, hri_msgs.RecordResponse>("/hri_robot_arm/Record", ServiceCallHandler, requestMsg);
-        }
-
-        private void ServiceCallHandler(hri_msgs.RecordResponse response)
-        {
-            Debug.Log("Completed: " + response.completed);
-            ToggleIndicator(indicator);
-            gameObject.GetComponent<BoundingBoxSubscriber>().enabled = true;
+            ToggleIndicator(indicatorBar);
+            recordActionClient.action.action_goal.goal = goal;
+            recordActionClient.SendGoal();
         }
 
         private void FillMsg()
         {
-            requestMsg.bbox.center.position = Conversions.Vec3ToGeoMsgsPoint(transform.position.Unity2Ros());
-            requestMsg.bbox.center.orientation = Conversions.QuaternionToGeoMsgsQuaternion(transform.rotation.Unity2Ros());
+            goal.bbox.center.position = Conversions.Vec3ToGeoMsgsPoint(transform.position.Unity2Ros());
+            goal.bbox.center.orientation = Conversions.QuaternionToGeoMsgsQuaternion(transform.rotation.Unity2Ros());
 
-            requestMsg.bbox.size = Conversions.Vec3ToGeoMsgsVec3(transform.localScale.Unity2RosScale());
+            goal.bbox.size = Conversions.Vec3ToGeoMsgsVec3(transform.localScale.Unity2RosScale());
 
-            requestMsg.header.frame_id = "unity_world";
-            requestMsg.header.Update();
+            goal.header.frame_id = "unity_world";
+            goal.header.Update();
         }
 
         private async void ToggleIndicator(IProgressIndicator indicator)
@@ -77,13 +89,31 @@ namespace HumanRobotInterface
             {
                 case ProgressIndicatorState.Closed:
                     await indicator.OpenAsync();
-                    Debug.Log("Start");
                     break;
 
                 case ProgressIndicatorState.Open:
                     await indicator.CloseAsync();
-                    Debug.Log("Stop");
                     break;
+            }
+        }
+
+        void Update()
+        {
+            if (indicatorBar.State == ProgressIndicatorState.Open)
+            {
+                barProgress = (float) recordActionClient.action.action_feedback.feedback.progress / 100;
+                indicatorBar.Progress = barProgress;
+                if (barProgress == 1)
+                {
+                    ToggleIndicator(indicatorBar);
+                    ToggleIndicator(indicatorOrbs);
+                }
+            }
+            if (recordActionClient.action.action_result.status.status == GoalStatus.SUCCEEDED)
+            {
+                ToggleIndicator(indicatorOrbs);
+                recordActionClient.action = new hri_msgs.RecordAction();
+                gameObject.GetComponent<BoundingBoxSubscriber>().enabled = true;
             }
         }
     }

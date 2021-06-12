@@ -14,20 +14,21 @@ using RosSharp.RosBridgeClient.MessageTypes.Vision;
 
 namespace RosSharp.RosBridgeClient.MessageTypes.HriRobotArm
 {
-    public class RecordRequest : Message
+    public class RecordGoal : Message
     {
-        public override string RosMessageName => "hri_robot_arm/Record";
+        public override string RosMessageName => "hri_robot_arm/RecordGoal";
 
+        // goal
         public Header header { get; set; }
         public BoundingBox3D bbox { get; set; }
 
-        public RecordRequest()
+        public RecordGoal()
         {
             this.header = new Header();
             this.bbox = new BoundingBox3D();
         }
 
-        public RecordRequest(Header header, BoundingBox3D bbox)
+        public RecordGoal(Header header, BoundingBox3D bbox)
         {
             this.header = header;
             this.bbox = bbox;
