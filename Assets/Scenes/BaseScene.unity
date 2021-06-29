@@ -2457,7 +2457,7 @@ PrefabInstance:
     - target: {fileID: 6131755083299501832, guid: 937ce507dd7ee334ba569554e24adbdd,
         type: 3}
       propertyPath: smoothing
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6131755083299501832, guid: 937ce507dd7ee334ba569554e24adbdd,
         type: 3}
@@ -4867,8 +4867,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   updateLinkedTransform: 0
-  moveLerpTime: 0
-  rotateLerpTime: 0
+  moveLerpTime: 0.1
+  rotateLerpTime: 0.1
   scaleLerpTime: 0
   maintainScaleOnInitialization: 1
   smoothing: 1
@@ -4877,7 +4877,7 @@ MonoBehaviour:
   minDistance: 1
   maxDistance: 1
   minViewDegrees: 0
-  maxViewDegrees: 0
+  maxViewDegrees: 10
   aspectV: 1
   ignoreAngleClamp: 0
   ignoreDistanceClamp: 0
@@ -6253,8 +6253,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   updateLinkedTransform: 0
-  moveLerpTime: 0
-  rotateLerpTime: 0
+  moveLerpTime: 0.1
+  rotateLerpTime: 0.1
   scaleLerpTime: 0
   maintainScaleOnInitialization: 1
   smoothing: 1
@@ -6263,7 +6263,7 @@ MonoBehaviour:
   minDistance: 1
   maxDistance: 1
   minViewDegrees: 0
-  maxViewDegrees: 0
+  maxViewDegrees: 10
   aspectV: 1
   ignoreAngleClamp: 0
   ignoreDistanceClamp: 0
@@ -14137,7 +14137,7 @@ MonoBehaviour:
   rotateLerpTime: 0.3
   scaleLerpTime: 0
   maintainScaleOnInitialization: 1
-  smoothing: 0
+  smoothing: 1
   lifetime: 0
   safeZone: 0
   safeZoneBuffer: 0.2
