@@ -63,7 +63,7 @@ namespace HumanRobotInterface
             }
             lastClickTime = Time.time;
 
-            gameObject.GetComponent<BoundingBoxSubscriber>().enabled = false;
+            // gameObject.GetComponent<BoundingBoxSubscriber>().enabled = false;  // Already disabled when keyboard is opened
             FillMsg();
             ToggleIndicator(indicatorBar);
             recordActionClient.action.action_goal.goal = goal;
@@ -109,7 +109,8 @@ namespace HumanRobotInterface
                     ToggleIndicator(indicatorOrbs);
                 }
             }
-            if (recordActionClient.action.action_result.status.status == GoalStatus.SUCCEEDED)
+            if (recordActionClient.action.action_result.status.status == GoalStatus.SUCCEEDED ||
+                recordActionClient.action.action_result.status.status == GoalStatus.ABORTED)
             {
                 ToggleIndicator(indicatorOrbs);
                 recordActionClient.action = new hri_msgs.RecordAction();
