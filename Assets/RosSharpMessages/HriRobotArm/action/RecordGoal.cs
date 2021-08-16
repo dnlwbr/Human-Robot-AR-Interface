@@ -20,17 +20,20 @@ namespace RosSharp.RosBridgeClient.MessageTypes.HriRobotArm
 
         // goal
         public Header header { get; set; }
+        public string class_name { get; set; }
         public BoundingBox3D bbox { get; set; }
 
         public RecordGoal()
         {
             this.header = new Header();
+            this.class_name = "";
             this.bbox = new BoundingBox3D();
         }
 
-        public RecordGoal(Header header, BoundingBox3D bbox)
+        public RecordGoal(Header header, string class_name, BoundingBox3D bbox)
         {
             this.header = header;
+            this.class_name = class_name;
             this.bbox = bbox;
         }
     }

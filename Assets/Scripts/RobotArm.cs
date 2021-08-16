@@ -1,4 +1,5 @@
 ﻿using Microsoft.MixedReality.Toolkit.UI;
+using Microsoft.MixedReality.Toolkit.Experimental.UI;
 using RosSharp;
 using RosSharp.RosBridgeClient;
 using System.Collections;
@@ -19,9 +20,6 @@ namespace HumanRobotInterface
         private RecordActionClient recordActionClient;
         private hri_msgs.RecordGoal goal;
         private string actionName = "/hri_robot_arm/Record";
-
-        private float lastClickTime = 0;
-        private float debounceDelay = 0.005f;
 
         [SerializeField]
         private GameObject indicatorObjectOrbs;
@@ -56,26 +54,29 @@ namespace HumanRobotInterface
 
         public void StartRecord()
         {
-            // Workaround due to bug that triggers OnSelected() twice
-            if (Time.time - lastClickTime < debounceDelay)
+            // Check whether classen name has been provided
+            string class_name = gameObject.GetComponent<MixedRealityKeyboard>().Text;
+            if (class_name.Length > 0)
             {
-                return;
+                FillMsg(class_name);
+                ToggleIndicator(indicatorBar);
+                recordActionClient.action.action_goal.goal = goal;
+                recordActionClient.SendGoal();
             }
-            lastClickTime = Time.time;
-
-            // gameObject.GetComponent<BoundingBoxSubscriber>().enabled = false;  // Already disabled when keyboard is opened
-            FillMsg();
-            ToggleIndicator(indicatorBar);
-            recordActionClient.action.action_goal.goal = goal;
-            recordActionClient.SendGoal();
+            else
+            {
+                Debug.Log("No class name has been provided.");
+            }
         }
 
-        private void FillMsg()
+        private void FillMsg(string class_name)
         {
             goal.bbox.center.position = Conversions.Vec3ToGeoMsgsPoint(transform.position.Unity2Ros());
             goal.bbox.center.orientation = Conversions.QuaternionToGeoMsgsQuaternion(transform.rotation.Unity2Ros());
 
             goal.bbox.size = Conversions.Vec3ToGeoMsgsVec3(transform.localScale.Unity2RosScale());
+
+            goal.class_name = class_name;
 
             goal.header.frame_id = "unity_world";
             goal.header.Update();
