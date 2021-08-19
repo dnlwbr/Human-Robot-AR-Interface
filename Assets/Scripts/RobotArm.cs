@@ -62,6 +62,7 @@ namespace HumanRobotInterface
                 ToggleIndicator(indicatorBar);
                 recordActionClient.action.action_goal.goal = goal;
                 recordActionClient.SendGoal();
+                Debug.Log("Goal has been sent with the class \"" + class_name + "\".");
             }
             else
             {
