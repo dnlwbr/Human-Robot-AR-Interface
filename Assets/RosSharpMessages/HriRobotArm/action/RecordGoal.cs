@@ -11,6 +11,7 @@
 
 using RosSharp.RosBridgeClient.MessageTypes.Std;
 using RosSharp.RosBridgeClient.MessageTypes.Vision;
+using RosSharp.RosBridgeClient.MessageTypes.Geometry;
 
 namespace RosSharp.RosBridgeClient.MessageTypes.HriRobotArm
 {
@@ -22,19 +23,22 @@ namespace RosSharp.RosBridgeClient.MessageTypes.HriRobotArm
         public Header header { get; set; }
         public string class_name { get; set; }
         public BoundingBox3D bbox { get; set; }
+        public Point gaze_point { get; set; }
 
         public RecordGoal()
         {
             this.header = new Header();
             this.class_name = "";
             this.bbox = new BoundingBox3D();
+            this.gaze_point = new Point();
         }
 
-        public RecordGoal(Header header, string class_name, BoundingBox3D bbox)
+        public RecordGoal(Header header, string class_name, BoundingBox3D bbox, Point gaze_point)
         {
             this.header = header;
             this.class_name = class_name;
             this.bbox = bbox;
+            this.gaze_point = gaze_point;
         }
     }
 }

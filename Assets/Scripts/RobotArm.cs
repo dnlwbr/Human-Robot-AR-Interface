@@ -1,4 +1,5 @@
-﻿using Microsoft.MixedReality.Toolkit.UI;
+﻿using Microsoft.MixedReality.Toolkit;
+using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.Experimental.UI;
 using RosSharp;
 using RosSharp.RosBridgeClient;
@@ -76,6 +77,9 @@ namespace HumanRobotInterface
             goal.bbox.center.orientation = Conversions.QuaternionToGeoMsgsQuaternion(transform.rotation.Unity2Ros());
 
             goal.bbox.size = Conversions.Vec3ToGeoMsgsVec3(transform.localScale.Unity2RosScale());
+
+            Vector3 HitPosition = CoreServices.InputSystem.EyeGazeProvider.HitPosition;
+            goal.gaze_point = Conversions.Vec3ToGeoMsgsPoint(HitPosition.Unity2Ros());
 
             goal.class_name = class_name;
 
