@@ -55,11 +55,14 @@ namespace HumanRobotInterface
 
         public void StartRecord()
         {
+            // Set dynamic values before entering the class name
+            FillMsg();
+
             // Check whether classen name has been provided
             string class_name = gameObject.GetComponent<MixedRealityKeyboard>().Text;
             if (class_name.Length > 0)
             {
-                FillMsg(class_name);
+                SetMsgClass(class_name);
                 ToggleIndicator(indicatorBar);
                 recordActionClient.action.action_goal.goal = goal;
                 recordActionClient.SendGoal();
@@ -71,20 +74,30 @@ namespace HumanRobotInterface
             }
         }
 
-        private void FillMsg(string class_name)
+        private void FillMsg()
         {
+            // Point Cloud
+            goal.segmented_cloud = gameObject.GetComponent<PointCloud2Subscriber>().pointCloud;
+
+            // Bounding Box
             goal.bbox.center.position = Conversions.Vec3ToGeoMsgsPoint(transform.position.Unity2Ros());
             goal.bbox.center.orientation = Conversions.QuaternionToGeoMsgsQuaternion(transform.rotation.Unity2Ros());
 
             goal.bbox.size = Conversions.Vec3ToGeoMsgsVec3(transform.localScale.Unity2RosScale());
 
+            // Gaze
             Vector3 HitPosition = CoreServices.InputSystem.EyeGazeProvider.HitPosition;
             goal.gaze_point = Conversions.Vec3ToGeoMsgsPoint(HitPosition.Unity2Ros());
 
-            goal.class_name = class_name;
-
+            // Header
             goal.header.frame_id = "unity_world";
             goal.header.Update();
+        }
+
+        private void SetMsgClass(string class_name)
+        {
+            // Class
+            goal.class_name = class_name;
         }
 
         private async void ToggleIndicator(IProgressIndicator indicator)
