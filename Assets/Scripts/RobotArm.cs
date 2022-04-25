@@ -6,6 +6,7 @@ using RosSharp.RosBridgeClient;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using TMPro;
 using UnityEngine;
 using RosSharp.RosBridgeClient.MessageTypes.Actionlib;
 using hri_msgs = RosSharp.RosBridgeClient.MessageTypes.HriRobotArm;
@@ -122,9 +123,11 @@ namespace HumanRobotInterface
             {
                 barProgress = (float) recordActionClient.action.action_feedback.feedback.progress / 100;
                 indicatorBar.Progress = barProgress;
-                if (barProgress == 1)
+                if (barProgress == 1)   // if 100 %
                 {
                     ToggleIndicator(indicatorBar);
+                    // Empty percentage in order to start without showing the previous progress at the beginning of the next run
+                    indicatorObjectBar.transform.Find("ProgressText").gameObject.GetComponent<TextMeshPro>().text = "";
                     ToggleIndicator(indicatorOrbs);
                 }
             }
