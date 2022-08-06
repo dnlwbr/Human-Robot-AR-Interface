@@ -78,7 +78,7 @@ namespace HumanRobotInterface
         private void FillMsg()
         {
             // Point Cloud
-            goal.segmented_cloud = gameObject.GetComponent<PointCloud2Subscriber>().pointCloud;
+            goal.segmented_cloud = gameObject.GetComponent<BoundingBoxSubscriber>().pointCloud;
 
             // Bounding Box
             goal.bbox.center.position = Conversions.Vec3ToGeoMsgsPoint(transform.position.Unity2Ros());

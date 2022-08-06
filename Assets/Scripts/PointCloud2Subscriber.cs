@@ -10,9 +10,9 @@ namespace HumanRobotInterface
 {
     public class PointCloud2Subscriber : Subscriber<sensor_msgs.PointCloud2>
     {
-        public sensor_msgs.PointCloud2 pointCloud;
-        
-        private bool isMessageReceived;
+        public sensor_msgs.PointCloud2 pointCloud { get; private set; }
+
+        public bool isMessageReceived { get; set; }
 
         // Start is called before the first frame update
         protected override void Start()

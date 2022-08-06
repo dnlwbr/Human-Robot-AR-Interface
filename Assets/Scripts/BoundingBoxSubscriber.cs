@@ -4,6 +4,7 @@ using UnityEngine;
 using RosSharp;
 using Microsoft.MixedReality.Toolkit;
 using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
+using sensor_msgs = RosSharp.RosBridgeClient.MessageTypes.Sensor;
 using vision_msgs = RosSharp.RosBridgeClient.MessageTypes.Vision;
 
 namespace HumanRobotInterface
@@ -19,6 +20,7 @@ namespace HumanRobotInterface
         private vision_msgs.Detection3D detectionMsg;
         private bool isMessageReceived;
 
+        public sensor_msgs.PointCloud2 pointCloud { get; private set; }
 
         // Start is called before the first frame update
         protected override void Start()
@@ -30,8 +32,12 @@ namespace HumanRobotInterface
         // Update is called once per frame
         void Update()
         {
-            if (isMessageReceived && isValid(detectionMsg.bbox))
+            if (isMessageReceived && isValid(detectionMsg.bbox) && gameObject.GetComponent<PointCloud2Subscriber>().isMessageReceived)
+            {
                 ProcessMessage();
+                pointCloud = gameObject.GetComponent<PointCloud2Subscriber>().pointCloud;
+                gameObject.GetComponent<PointCloud2Subscriber>().isMessageReceived = false;
+            }
         }
 
         protected override void callback(vision_msgs.Detection3D message)
