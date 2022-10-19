@@ -3,6 +3,7 @@ using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.Experimental.UI;
 using RosSharp;
 using RosSharp.RosBridgeClient;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using TMPro;
 using UnityEngine;
 using RosSharp.RosBridgeClient.MessageTypes.Actionlib;
 using hri_msgs = RosSharp.RosBridgeClient.MessageTypes.HriRobotArm;
+using geometry_msgs = RosSharp.RosBridgeClient.MessageTypes.Geometry;
 
 
 namespace HumanRobotInterface
@@ -31,6 +33,9 @@ namespace HumanRobotInterface
         private IProgressIndicator indicatorBar;
 
         float barProgress = 0;
+        bool isBussy = false;
+        List<geometry_msgs.Point> gaze_points;
+        float countDown = 10f;
 
 
         // Start is called before the first frame update
@@ -52,6 +57,7 @@ namespace HumanRobotInterface
         void OnDisable()
         {
             recordActionClient.Terminate();
+            isBussy = false;
         }
 
         public void StartRecord()
@@ -75,20 +81,51 @@ namespace HumanRobotInterface
             }
         }
 
+        public void TrackGaze()
+        {
+            if (isBussy)
+                return;
+
+            isBussy = true;
+
+            // Track Gaze
+            gaze_points = new List<geometry_msgs.Point>();
+            Vector3 hitPosition;
+            var startTime = DateTime.UtcNow;
+            while (DateTime.UtcNow - startTime < TimeSpan.FromSeconds(countDown))
+            {
+                hitPosition = CoreServices.InputSystem.EyeGazeProvider.HitPosition;
+                hitPosition = hitPosition.Unity2Ros();
+                gaze_points.Add(Conversions.Vec3ToGeoMsgsPoint(hitPosition));
+            }
+
+            // Open Keyboard
+            gameObject.GetComponent<KeyboardHandler>().OpenKeyboard();
+
+        }
+
         private void FillMsg()
         {
-            // Point Cloud
-            goal.segmented_cloud = gameObject.GetComponent<BoundingBoxSubscriber>().pointCloud;
+            if (gameObject.GetComponent<BoundingBoxSubscriber>())
+            {
+                // Point Cloud
+                goal.segmented_cloud = gameObject.GetComponent<BoundingBoxSubscriber>().pointCloud;
 
-            // Bounding Box
-            goal.bbox.center.position = Conversions.Vec3ToGeoMsgsPoint(transform.position.Unity2Ros());
-            goal.bbox.center.orientation = Conversions.QuaternionToGeoMsgsQuaternion(transform.rotation.Unity2Ros());
+                // Bounding Box
+                goal.bbox.center.position = Conversions.Vec3ToGeoMsgsPoint(transform.position.Unity2Ros());
+                goal.bbox.center.orientation = Conversions.QuaternionToGeoMsgsQuaternion(transform.rotation.Unity2Ros());
 
-            goal.bbox.size = Conversions.Vec3ToGeoMsgsVec3(transform.localScale.Unity2RosScale());
+                goal.bbox.size = Conversions.Vec3ToGeoMsgsVec3(transform.localScale.Unity2RosScale());
 
-            // Gaze
-            Vector3 HitPosition = CoreServices.InputSystem.EyeGazeProvider.HitPosition;
-            goal.gaze_point = Conversions.Vec3ToGeoMsgsPoint(HitPosition.Unity2Ros());
+                // Gaze
+                Vector3 hitPosition = CoreServices.InputSystem.EyeGazeProvider.HitPosition;
+                goal.gaze_point = Conversions.Vec3ToGeoMsgsPoint(hitPosition.Unity2Ros());
+            }
+            else
+            {
+                // Gaze Points
+                goal.gaze_points = gaze_points.ToArray();
+            }
 
             // Header
             goal.header.frame_id = "unity_world";
@@ -136,7 +173,9 @@ namespace HumanRobotInterface
             {
                 ToggleIndicator(indicatorOrbs);
                 recordActionClient.action = new hri_msgs.RecordAction();
-                gameObject.GetComponent<BoundingBoxSubscriber>().enabled = true;
+                if (gameObject.GetComponent<BoundingBoxSubscriber>())
+                    gameObject.GetComponent<BoundingBoxSubscriber>().enabled = true;
+                isBussy = false;
             }
         }
     }

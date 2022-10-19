@@ -26,6 +26,7 @@ namespace RosSharp.RosBridgeClient.MessageTypes.HriRobotArm
         public BoundingBox3D bbox { get; set; }
         public Point gaze_point { get; set; }
         public PointCloud2 segmented_cloud { get; set; }
+        public Point[] gaze_points { get; set; }
 
         public RecordGoal()
         {
@@ -34,15 +35,17 @@ namespace RosSharp.RosBridgeClient.MessageTypes.HriRobotArm
             this.bbox = new BoundingBox3D();
             this.gaze_point = new Point();
             this.segmented_cloud = new PointCloud2();
+            this.gaze_points = new Point[0];
         }
 
-        public RecordGoal(Header header, string class_name, BoundingBox3D bbox, Point gaze_point, PointCloud2 segmented_cloud)
+        public RecordGoal(Header header, string class_name, BoundingBox3D bbox, Point gaze_point, PointCloud2 segmented_cloud, Point[] gaze_points)
         {
             this.header = header;
             this.class_name = class_name;
             this.bbox = bbox;
             this.gaze_point = gaze_point;
             this.segmented_cloud = segmented_cloud;
+            this.gaze_points = gaze_points;
         }
     }
 }
