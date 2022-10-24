@@ -35,14 +35,14 @@ namespace HumanRobotInterface
         float barProgress = 0;
         bool isBussy = false;
         List<geometry_msgs.Point> gaze_points;
-        float countDown = 10f;
-
+        private AudioSource audioSource;
 
         // Start is called before the first frame update
         void Start()
         {
             indicatorOrbs = indicatorObjectOrbs.GetComponent<IProgressIndicator>();
             indicatorBar = indicatorObjectBar.GetComponent<IProgressIndicator>();
+            audioSource = GetComponent<AudioSource>();
         }
 
         void OnEnable()
@@ -81,28 +81,39 @@ namespace HumanRobotInterface
             }
         }
 
-        public void TrackGaze()
+        public void StartGazeTracking()
         {
             if (isBussy)
                 return;
 
             isBussy = true;
 
+            // Set initial gaze point
+            Vector3 hitPosition = CoreServices.InputSystem.EyeGazeProvider.HitPosition;
+            goal.gaze_point = Conversions.Vec3ToGeoMsgsPoint(hitPosition.Unity2Ros());
+
             // Track Gaze
+            StartCoroutine(TrackGaze());
+        }
+
+        private IEnumerator TrackGaze()
+        {
             gaze_points = new List<geometry_msgs.Point>();
             Vector3 hitPosition;
-            var startTime = DateTime.UtcNow;
-            while (DateTime.UtcNow - startTime < TimeSpan.FromSeconds(countDown))
+            yield return new WaitForSeconds(3);
+            audioSource.Play();
+            while (audioSource.isPlaying)
             {
                 hitPosition = CoreServices.InputSystem.EyeGazeProvider.HitPosition;
                 hitPosition = hitPosition.Unity2Ros();
                 gaze_points.Add(Conversions.Vec3ToGeoMsgsPoint(hitPosition));
+                yield return null;
             }
 
             // Open Keyboard
             gameObject.GetComponent<KeyboardHandler>().OpenKeyboard();
-
         }
+
 
         private void FillMsg()
         {
