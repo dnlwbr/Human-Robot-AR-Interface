@@ -100,7 +100,7 @@ namespace HumanRobotInterface
         {
             gaze_points = new List<geometry_msgs.Point>();
             Vector3 hitPosition;
-            yield return new WaitForSeconds(3);
+            //yield return new WaitForSeconds(3);
             audioSource.Play();
             while (audioSource.isPlaying)
             {
