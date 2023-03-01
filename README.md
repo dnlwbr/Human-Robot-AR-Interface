@@ -1,6 +1,7 @@
 # Human-Robot AR Interface
 
-Augmented Reality Interface developed for the HoloLens 2 as part of Weber et al., HRI'22 and HRI'23.
+Augmented Reality Interface developed for the HoloLens 2 as part of Weber et al., HRI'22 and HRI'23.  
+For further information see [project page](https://github.com/dnlwbr/Multiperspective-Teaching).
 
 If you find the code useful, please consider citing our papers.  
 For the human-robot calibration and object segmentation, please cite:
